@@ -105,13 +105,13 @@ Status below records **book-body linkage only**. Canonical source repository / f
 
 ### E-MECH-01 — Directional mechanism pattern with unresolved verdict
 
-- Used in: Ch.14; later Ch.19
-- Ch.14 body linkage:
-  - higher DRAM read amplification
-  - lower cache hit
-  - higher data-dependency-related waiting
-  - lower utilization of some compute units
-- Allowed interpretation:
+- Used in: Ch.14, Ch.19
+- Exact measured values cited in Ch.19:
+  - DRAM read amplification: LM head = 4.268; FFN-down = 1.436
+  - LSC hit ratio: LM head = 0.103; FFN-down = 0.738
+  - XVE SBID stall: LM head = 81.78%; FFN-down = 56.50%
+  - ALU1 utilization: LM head ≈ 1.58%; FFN-down ≈ 13.84%
+- Ch.14/19 interpretation:
   - directional pattern motivating a memory-related hypothesis
 - Required scientific verdict:
   - **UNRESOLVED / no confirmed mechanism**
@@ -121,6 +121,21 @@ Status below records **book-body linkage only**. Canonical source repository / f
 
 ### E-COUNTER-01 — Hardware-counter inventory and adequacy failure
 
-- Part III body linkage: **NOT YET OPEN**
-- First planned body use: Ch.17
+- Used in: Ch.17; supports adequacy context in Ch.19
+- Exact measured values / observations:
+  - exposed counters = 268
+  - inventory measurement passes = 12
+  - GpuTime = 0 in all three counter groups used
+  - XVE_STALL: execution/occupancy group = 0; stall-cause group = non-zero
+  - GPU_MEMORY_REQUEST_QUEUE_FULL: memory/cache group includes non-zero samples; stall-cause group = 0
+- Allowed interpretation:
+  - the selected measurement channel was inadequate for the target causal-mechanism confirmation
+  - counter value 0 cannot be promoted to physical quantity 0 when the channel is inadequate
+- Required boundary:
+  - **counter = 0 ≠ physical quantity = 0**
+- Required scientific consequence:
+  - measurement adequacy FAIL → mechanism remains **UNRESOLVED**
+- Not supported:
+  - physical GPU time was zero
+  - a confirmed memory bottleneck
 - Provenance status: **PENDING**
