@@ -313,7 +313,7 @@ Tên công cụ, cấu trúc phần mềm, nhánh nghiên cứu, quy trình tri�
 
 Ta chỉ giữ lại điều có giá trị khoa học rộng hơn:
 
-- một phép tính logic có thể khác một công việc vật lý như thế nào;
+- một công việc trong sơ đồ mô hình có thể khác cách phần cứng thực thi nó như thế nào;
 - thời gian có thể tập trung ở đâu;
 - một phép đo có thể thất bại ra sao;
 - tại sao một con số bằng 0 chưa chắc đại lượng thật bằng 0;

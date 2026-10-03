@@ -60,7 +60,7 @@ Câu B:
 
 Token “đá” có cùng danh tính.
 
-> **[FIGURE F05] — Cùng một token, hai ngữ cảnh, hai quỹ đạo trạng thái**
+> **[FIGURE F05] — Cùng một token, hai ngữ cảnh, hai trạng thái khác nhau**
 
 Nếu cùng một bảng nhúng được dùng, phần biểu diễn lấy trực tiếp từ danh tính token đó bắt đầu từ cùng một hàng số đã học.
 

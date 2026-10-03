@@ -148,7 +148,7 @@ Nhưng mã token cũng chưa phải thứ các lớp của mô hình thực sự
 
 Nếu cùng một đoạn văn được chia thành số token khác nhau, điều đó có thể ảnh hưởng tới độ dài chuỗi, lượng ngữ cảnh chiếm dụng, bộ nhớ, thời gian xử lý và cách các mảnh đầu vào được đưa vào mô hình.
 
-Vì vậy tokenization không chỉ là “cắt câu cho đẹp”. Nó là một phần của cách văn bản bước vào mô hình.
+Vì vậy việc chia token không chỉ là “cắt câu cho đẹp”. Nó là một phần của cách văn bản bước vào mô hình.
 
 ## Nhưng đừng suy diễn quá xa
 
