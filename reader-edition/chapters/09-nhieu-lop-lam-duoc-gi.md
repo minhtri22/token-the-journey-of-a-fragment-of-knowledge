@@ -52,11 +52,7 @@ x3 = lớp 3 xử lý x2
 ...
 ~~~
 
-Mỗi lớp không bắt đầu lại từ token gốc.
-
-Nó nhận một trạng thái đã được xử lý bởi các lớp trước.
-
-Vì vậy lớp sau có thể xây tiếp trên những cấu trúc mà lớp trước đã tạo ra.
+Mỗi lớp không bắt đầu lại từ token gốc. Nó nhận trạng thái đã được xử lý bởi lớp trước và có thể xây tiếp trên những cấu trúc đã được tạo ra.
 
 ## Sự kết hợp nhiều bước
 
@@ -86,14 +82,7 @@ Nhưng ý tưởng composition vẫn hữu ích:
 
 Số lớp nối tiếp nhau tạo ra **chiều sâu (depth)** của mạng.
 
-Một mô hình có nhiều lớp có nhiều cơ hội hơn để:
-
-- trộn thông tin;
-- cập nhật trạng thái;
-- tạo các đặc trưng trung gian;
-- kết hợp kết quả của những phép biến đổi trước.
-
-Có thể vẽ:
+Nhiều lớp tạo thêm cơ hội để trộn thông tin, cập nhật trạng thái, tạo đặc trưng trung gian và kết hợp kết quả của những phép biến đổi trước.
 
 ~~~text
 đầu vào
@@ -104,116 +93,65 @@ trạng thái trung gian
 ↓
 biến đổi 2
 ↓
-trạng thái trung gian
-↓
-biến đổi 3
-↓
 ...
 ↓
 trạng thái cuối
 ~~~
 
-Chiều sâu không tự động đảm bảo mô hình tốt hơn trong mọi trường hợp.
-
-Nhưng nó tạo khả năng thực hiện chuỗi biến đổi dài hơn.
-
+Chiều sâu không tự động đảm bảo mô hình tốt hơn trong mọi trường hợp; nó chỉ mở khả năng thực hiện chuỗi biến đổi dài hơn.
 ## Có phải lớp thấp học cú pháp, lớp cao học ngữ nghĩa?
 
 Bạn có thể gặp câu kiểu:
 
 > “Lớp thấp học từ và ngữ pháp, lớp cao học ý nghĩa và suy luận.”
 
-Đây có thể là một cách tóm tắt một số khuynh hướng quan sát được trong vài mô hình và vài phép phân tích.
+Đó có thể là tóm tắt một số khuynh hướng quan sát được, nhưng không nên coi là định luật.
 
-Nhưng không nên coi nó là định luật.
+Thông tin có thể xuất hiện ở nhiều lớp, phân tán, được tạo rồi suy yếu; cùng một lớp cũng có thể tham gia nhiều chức năng.
 
-Trong hệ thống thật:
-
-- cùng một loại thông tin có thể xuất hiện ở nhiều lớp;
-- thông tin có thể phân tán;
-- một đặc trưng có thể được tạo rồi suy yếu;
-- cùng một lớp có thể tham gia nhiều chức năng;
-- các mô hình khác nhau có thể tổ chức khác nhau.
-
-Vì vậy cuốn sách sẽ tránh sơ đồ cứng kiểu:
-
-~~~text
-lớp 1 = chữ
-lớp 2 = ngữ pháp
-lớp 3 = nghĩa
-lớp 4 = tri thức
-~~~
-
-Nó quá đẹp để là toàn bộ sự thật.
-
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> Tránh sơ đồ cứng kiểu `lớp 1 = chữ`, `lớp 2 = ngữ pháp`, `lớp 3 = tri thức`. Nó quá đẹp để đại diện cho toàn bộ hệ thống.
 ## Cách nhìn tốt hơn: quỹ đạo biểu diễn
 
 Thay vì hỏi:
 
 > “Tri thức nằm ở lớp nào?”
 
-ta có thể hỏi một câu mềm hơn:
+ta có thể hỏi:
 
 > **Biểu diễn thay đổi như thế nào khi đi qua các lớp?**
 
 Ta gọi chuỗi trạng thái đó là một **quỹ đạo biểu diễn (representation trajectory)**.
 
-Ví dụ:
+> **[FIGURE F10 — HERO FIGURE] — Một token identity, nhiều state qua chiều sâu**
+>
+> ~~~text
+> TOKEN ID giữ nguyên
+>        │
+>        ↓
+> x0 → x1 → x2 → x3 → ... → xN
+>      trạng thái số thay đổi
+> ~~~
 
-~~~text
-token ban đầu
-↓
-trạng thái lớp 0
-↓
-trạng thái lớp 1
-↓
-trạng thái lớp 2
-↓
-...
-↓
-trạng thái lớp N
-~~~
-
-Đây là một trong những ý trung tâm của cuốn sách.
+Đây là một ý trung tâm của cuốn sách.
 
 Không phải:
 
-> token mang một mẩu tri thức đi xuyên qua model.
+> token mang một mẩu tri thức nguyên vẹn đi xuyên model.
 
 Mà gần hơn với:
 
 > **một trạng thái số được biến đổi liên tục qua một quỹ đạo.**
-
 ## Một token có “biến dạng” không?
 
-Nếu nói bằng ngôn ngữ trực giác, có thể nói:
+Nếu nói bằng trực giác, có thể nói:
 
 > “Biểu diễn của token đang biến dạng qua các lớp.”
 
-Nhưng cần hiểu đúng.
+Nhưng cần hiểu đúng: token ID và chữ trên màn hình không đổi. Thứ thay đổi là **trạng thái số gắn với vị trí token trong ngữ cảnh hiện tại**.
 
-Token ID không đổi.
-
-Chữ trên màn hình không đổi.
-
-Thứ thay đổi là **trạng thái số gắn với vị trí token trong ngữ cảnh hiện tại**.
-
-Có thể vẽ:
-
-~~~text
-TOKEN ID
-  8421
-   │
-   │ giữ nguyên danh tính
-   ↓
-x0 → x1 → x2 → x3 → ... → xN
-     trạng thái số thay đổi
-~~~
-
-Đây chính là loại “biến dạng” mà một công cụ quan sát biểu diễn có thể muốn theo dõi.
-
-Nhưng cuốn sách chưa cần công cụ nào để hiểu khái niệm.
-
+F10 chính là hình ta sẽ mang theo tới nửa sau cuốn sách: cùng một danh tính đầu vào, nhưng trạng thái có một đường đi qua chiều sâu.
 ## Làm sao biết thay đổi nào quan trọng?
 
 Đây là câu hỏi khó hơn.

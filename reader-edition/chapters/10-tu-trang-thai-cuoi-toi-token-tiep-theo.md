@@ -60,8 +60,8 @@ Từ trạng thái cuối, mô hình tính một điểm cho từng token có th
 
 Các điểm thô này được gọi là **điểm dự đoán (logits)**.
 
-Ví dụ minh họa:
-
+> **MINH HỌA — Illustration**
+>
 ~~~text
 Việt   12,4
 Nam     7,1
@@ -102,8 +102,8 @@ Logit là điểm thô.
 
 Nếu muốn biểu diễn chúng thành một phân bố xác suất, ta có thể áp dụng **softmax**.
 
-Ví dụ tưởng tượng:
-
+> **MINH HỌA — Illustration**
+>
 ~~~text
 logits
 Việt   12,4
@@ -138,8 +138,8 @@ Cách đơn giản nhất là chọn token có điểm cao nhất.
 
 Đây là **chọn tham lam (greedy decoding)**.
 
-Ví dụ:
-
+> **MINH HỌA — Illustration**
+>
 ~~~text
 Việt  12,4  ← cao nhất
 Nam    7,1
@@ -171,122 +171,63 @@ Hà Nội là thủ đô của Việt Nam
 
 ## Nhưng chatbot không phải lúc nào cũng chọn điểm cao nhất
 
-Nếu lúc nào cũng chọn token đứng đầu, đầu ra sẽ rất quyết định và dễ lặp lại.
+Nếu luôn chọn token đứng đầu, đầu ra sẽ rất quyết định. Nhiều hệ thống dùng **lấy mẫu (sampling)**: token có xác suất cao có cơ hội lớn hơn được chọn, nhưng không nhất thiết luôn thắng.
 
-Nhiều hệ thống dùng **lấy mẫu (sampling)**.
-
-Thay vì luôn chọn token cao nhất, hệ thống lấy token từ phân bố xác suất theo một số quy tắc.
-
-Có thể hình dung:
-
-~~~text
-Việt   0,70
-Pháp   0,10
-Nam    0,08
-...
-~~~
-
-Token có xác suất cao có cơ hội lớn hơn được chọn, nhưng không nhất thiết luôn thắng.
-
-Các tham số như nhiệt độ (temperature), top-k hay top-p điều chỉnh cách lấy mẫu.
-
-Cuốn sách này không cần đi sâu vào chúng.
+Các tham số như **temperature**, **top-k** hay **top-p** điều chỉnh cách lấy mẫu. Cuốn sách không đi sâu vào chúng.
 
 Điều quan trọng là:
 
 > **mô hình tạo ra phân bố; chiến lược giải mã quyết định cách chọn token từ phân bố đó.**
-
 ## Toàn bộ vòng lặp sinh văn bản
 
-Bây giờ ta có thể vẽ toàn bộ quá trình từ chuỗi hiện tại tới chuỗi dài hơn:
+> **[FIGURE F11] — Vòng lặp sinh token**
+>
+> ~~~text
+> chuỗi hiện tại
+>       ↓
+> token + biểu diễn
+>       ↓
+> nhiều lớp Transformer
+>       ↓
+> trạng thái cuối
+>       ↓
+> LM head → logits
+>       ↓
+> chọn / lấy mẫu
+>       ↓
+> 1 token mới
+>       ↓
+> nối vào chuỗi
+>       └──────────────→ lặp lại
+> ~~~
 
-~~~text
-chuỗi hiện tại
-      ↓
-chia thành token
-      ↓
-biểu diễn bằng số
-      ↓
-nhiều lớp Transformer
-      ↓
-trạng thái cuối
-      ↓
-LM head
-      ↓
-logits
-      ↓
-chọn / lấy mẫu
-      ↓
-1 token mới
-      ↓
-nối vào chuỗi
-      ↓
-lặp lại
-~~~
-
-Đây là vòng lặp làm cho một mô hình sinh văn bản có thể tạo cả đoạn dài.
-
-Mỗi vòng thêm một token.
-
-Nhiều vòng liên tiếp tạo thành câu, đoạn và văn bản.
-
+Mỗi vòng thêm một token. Nhiều vòng liên tiếp tạo thành câu, đoạn và văn bản.
 ## Vậy token mới có phải “kết quả của một token cũ” không?
 
 Không nên nghĩ theo quan hệ một-một:
 
 ~~~text
-token A
-↓
-token B
+token A → token B
 ~~~
 
-Token mới được dự đoán từ **trạng thái của toàn chuỗi ngữ cảnh hiện tại**, sau nhiều lớp biến đổi.
-
-Vì vậy hình đúng hơn là:
+Token mới được dự đoán từ **trạng thái của toàn chuỗi ngữ cảnh hiện tại** sau nhiều lớp biến đổi.
 
 ~~~text
-[token 1] [token 2] [token 3] ... [token n]
+[token 1] [token 2] ... [token n]
           ↓
      toàn chuỗi được xử lý
           ↓
      trạng thái cuối
           ↓
-     token n+1
+       token n+1
 ~~~
 
 Token mới là kết quả của cả quá trình, không phải một token cũ tự biến thành token mới.
-
 ## “Mảnh tri thức” ở cuối đường đã xuất hiện chưa?
 
-Ta đã đi khá xa.
+Ta đã đi từ token tới biểu diễn, ngữ cảnh, attention, FFN, residual, nhiều lớp, logits và token mới.
 
-Từ:
-
-~~~text
-token
-~~~
-
-tới:
-
-~~~text
-biểu diễn
-↓
-ngữ cảnh
-↓
-attention
-↓
-FFN
-↓
-residual
-↓
-nhiều lớp
-↓
-logits
-↓
-token mới
-~~~
-
-Nhưng vẫn chưa có một điểm nào cho phép ta nói:
+Nhưng vẫn chưa có điểm nào cho phép ta nói:
 
 > “Đây chính là viên tri thức.”
 
@@ -294,46 +235,38 @@ Thứ ta thấy là:
 
 > **một quá trình biến đổi trạng thái dẫn tới một phân bố dự đoán.**
 
-Đây là kết luận quan trọng của nửa đầu cuốn sách.
-
-Tri thức mà mô hình thể hiện có vẻ không phải một vật thể chạy nguyên vẹn qua dây chuyền.
-
-Nó xuất hiện trong **quan hệ giữa trọng số đã học, ngữ cảnh và chuỗi biến đổi**.
-
+Điều mô hình biểu hiện xuất hiện từ quan hệ giữa trọng số đã học, ngữ cảnh và chuỗi biến đổi — không phải một vật thể chạy nguyên vẹn qua dây chuyền.
 ## Nhưng những hộp ta vừa vẽ có thật sự chạy như vậy trên GPU không?
 
-Đây là câu hỏi mở sang nửa sau.
+Đây là chiếc cửa sang phần tiếp theo.
 
-Cho tới giờ, ta nói:
+Cho tới giờ ta nói về attention, FFN và LM head như những **hộp trong sơ đồ mô hình**. Phần cứng lại nhận những công việc thực thi cụ thể; ranh giới thực thi không nhất thiết trùng với ranh giới ta vẽ ở mức mô hình.
 
-~~~text
-attention
-FFN
-LM head
-~~~
+> **[FIGURE F12] — Ranh giới phần sách: đường logic → đường thực thi vật lý**
+>
+> ~~~text
+> SƠ ĐỒ MÔ HÌNH
+> attention → FFN → LM head
+>          ↓
+>        runtime
+>          ↓
+> CÔNG VIỆC THỰC THI TRÊN PHẦN CỨNG
+> ~~~
 
-như những hộp logic.
-
-Nhưng phần cứng không nhìn thấy sơ đồ sách.
-
-GPU nhận những công việc cụ thể.
-
-Một phép tính logic có thể bị chia thành nhiều công việc vật lý.
-
-Nhiều phép tính logic cũng có thể được gộp.
-
-Bộ nhớ, đồng bộ và cách lập lịch đều tham gia.
-
-Nói cách khác:
-
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
 > **Đường đi logic của token chưa phải đường đi vật lý của token.**
 
 Đó là chiếc cửa tiếp theo.
 
 ### Nhớ 3 điều
 
-1. **Trạng thái cuối được biến thành điểm dự đoán (logits) cho các token có thể đứng tiếp.**
-2. **Chiến lược giải mã có thể chọn token cao nhất hoặc lấy mẫu từ phân bố; token mới được nối vào chuỗi rồi toàn quá trình lặp lại.**
-3. **Token mới không phải do một token cũ tự biến thành nó; nó được dự đoán từ trạng thái của toàn ngữ cảnh sau nhiều lớp biến đổi.**
+1. **Trạng thái cuối được biến thành logits cho các token có thể đứng tiếp.**
+2. **Chiến lược giải mã chọn hoặc lấy mẫu token; token mới được nối vào chuỗi rồi toàn quá trình lặp lại.**
+3. **Token mới được dự đoán từ trạng thái của toàn ngữ cảnh sau nhiều lớp biến đổi, không phải do một token cũ tự biến thành nó.**
+
+---
+
+# HẾT PHẦN II — ĐI XUYÊN TRANSFORMER
 
 **Tiếp theo: [Chương 11 — Một phép tính logic không phải một chương trình GPU](11-phep-tinh-logic-khong-phai-kernel.md)**

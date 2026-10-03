@@ -24,29 +24,22 @@ Ta thử mở một chiếc hộp.
 
 ## Một lớp không phải một phép tính duy nhất
 
-Hãy hình dung một dây chuyền.
+Hãy hình dung một dây chuyền: trạng thái đi vào, qua vài trạm xử lý, rồi đi ra với trạng thái đã thay đổi.
 
-Một vật đi vào.
-
-Nó trải qua vài trạm xử lý.
-
-Sau đó đi ra với trạng thái đã thay đổi.
-
-Một lớp Transformer (Transformer layer) cũng có thể được nhìn theo cách gần như vậy.
-
-Với loại mô hình ngôn ngữ sinh token phổ biến hiện nay, một lớp thường có những thành phần chính như:
+Một **lớp Transformer (Transformer layer)** cũng có thể được nhìn như vậy. Với loại mô hình ngôn ngữ sinh token phổ biến hiện nay, một lớp thường có:
 
 - bước chuẩn hóa;
 - cơ chế cho các vị trí lấy thông tin từ nhau;
 - một nhánh biến đổi trạng thái;
 - các đường cộng lại tín hiệu cũ.
 
-Tên kỹ thuật của chúng sẽ xuất hiện ngay sau khi ta có hình dung.
-
+Tên kỹ thuật sẽ xuất hiện ngay sau khi ta có bản đồ tổng thể.
 ## Bản đồ đơn giản của một lớp
 
 Ta bắt đầu từ trạng thái của các token:
 
+> **[FIGURE F06] — Bản đồ chuẩn của một lớp Transformer**
+>
 ~~~text
 trạng thái đi vào lớp
         │
@@ -72,25 +65,15 @@ trạng thái đi vào lớp
 trạng thái đi ra khỏi lớp
 ~~~
 
-Đây là bản đồ đủ tốt để đọc các chương tiếp theo.
-
-Các kiến trúc Transformer cụ thể có thể khác nhau về chi tiết, thứ tự hoặc công thức.
-
-Cuốn sách này chủ yếu dùng trực giác của mô hình ngôn ngữ kiểu **chỉ dùng bộ giải mã (decoder-only)**, vì đây là dạng rất phổ biến trong các LLM sinh văn bản.
+Đây là bản đồ đủ tốt để đọc các chương tiếp theo. Các Transformer cụ thể có thể khác về chi tiết, thứ tự hay công thức; cuốn sách chủ yếu dùng trực giác của mô hình ngôn ngữ **chỉ dùng bộ giải mã (decoder-only)**.
 
 ## Chuẩn hóa để làm gì?
 
-Trạng thái bên trong mô hình là những dãy số.
+Trạng thái bên trong mô hình là những dãy số. Sau nhiều phép biến đổi, độ lớn và phân bố của chúng có thể thay đổi.
 
-Sau nhiều phép biến đổi, độ lớn và phân bố của các con số có thể thay đổi.
+Một bước **chuẩn hóa (normalization)** giúp đưa tín hiệu về dạng thuận lợi hơn cho phép tính tiếp theo. Một loại thường gặp là **chuẩn hóa RMS (RMSNorm)**.
 
-Một bước **chuẩn hóa (normalization)** giúp đưa tín hiệu về một dạng thuận lợi hơn cho phép tính tiếp theo.
-
-Một loại thường gặp là **chuẩn hóa RMS (RMSNorm)**.
-
-Ta chưa cần công thức.
-
-Chỉ cần hình dung:
+Ta chưa cần công thức. Chỉ cần hiểu:
 
 ~~~text
 dãy số đầu vào
@@ -100,15 +83,10 @@ dãy số đầu vào
 dãy số phù hợp hơn cho bước tiếp
 ~~~
 
-Chuẩn hóa không phải phần “mang tri thức” theo nghĩa một chiếc hộp chứa thông tin.
-
-Nó là một phần của cách dòng tín hiệu được giữ trong vùng hoạt động phù hợp.
-
+Chuẩn hóa không phải “chiếc hộp chứa tri thức”; nó là một phần của cách dòng tín hiệu được duy trì và xử lý.
 ## Cơ chế chú ý: nhìn sang những vị trí khác
 
-Đây là phần nổi tiếng nhất của Transformer.
-
-Tên của nó là **cơ chế chú ý (attention)**.
+Tên của phần này là **cơ chế chú ý (attention)**.
 
 Hãy trở lại câu:
 
@@ -158,9 +136,7 @@ trạng thái mới
 
 Nếu attention chủ yếu giúp **trao đổi thông tin giữa các vị trí**, FFN có thể được hình dung như một trạm **biến đổi trạng thái tại từng vị trí**.
 
-Đây cũng chỉ là một **mô hình tinh thần (mental model)**.
-
-Chương 7 sẽ mở nó kỹ hơn.
+Đây là một **mô hình tinh thần (mental model)**. Chương 7 sẽ mở nó kỹ hơn.
 
 ## Đường cộng tắt: không vứt bỏ trạng thái cũ
 
@@ -201,62 +177,43 @@ biểu diễn ban đầu
        ↓
  trạng thái 2
        ↓
-     lớp 3
-       ↓
- trạng thái 3
-       ↓
       ...
 ~~~
 
-mỗi lớp có cơ hội:
-
-- lấy thêm thông tin từ ngữ cảnh;
-- biến đổi trạng thái;
-- giữ lại và cộng thêm những thay đổi.
-
-Điều quan trọng là:
+mỗi lớp có cơ hội lấy thêm thông tin từ ngữ cảnh, biến đổi trạng thái và giữ một đường cho tín hiệu cũ đi tiếp.
 
 > **Không có một lớp duy nhất phải làm toàn bộ công việc.**
 
-Một lớp có thể tạo ra những thay đổi mà lớp sau tiếp tục sử dụng.
+Một lớp tạo ra thay đổi mà lớp sau có thể tiếp tục sử dụng. Đó là lý do chiều sâu của mô hình quan trọng.
+## Ghép lại bản đồ của một lớp
 
-Đó là lý do chiều sâu của mô hình trở thành một phần quan trọng của câu chuyện.
-
-## Một sơ đồ đầy đủ hơn một chút
-
-Bây giờ ta có thể ghép lại:
+F06 là hình chuẩn sẽ được dùng lại trong ba chương tiếp theo.
 
 ~~~text
-                 MỘT LỚP TRANSFORMER
-
 trạng thái vào
      │
-     ├─────────────── đường cũ ───────────────┐
-     ↓                                        │
-chuẩn hóa                                     │
-     ↓                                        │
-cơ chế chú ý                                  │
-     ↓                                        │
-kết quả mới ──────────────────────────────── cộng
-                                              ↓
-                                      trạng thái giữa
-                                              │
-                                              ├──── đường cũ ────┐
-                                              ↓                   │
-                                         chuẩn hóa                │
-                                              ↓                   │
-                                      mạng truyền thẳng           │
-                                              ↓                   │
-                                       kết quả mới ──────────── cộng
-                                                                  ↓
-                                                           trạng thái ra
+     ├──────── đường cũ ────────┐
+     ↓                          │
+chuẩn hóa                       │
+     ↓                          │
+attention                      │
+     ↓                          │
+phần cập nhật ──────────────── cộng
+                                ↓
+                         trạng thái giữa
+                                │
+                                ├── đường cũ ──┐
+                                ↓               │
+                           chuẩn hóa            │
+                                ↓               │
+                              FFN               │
+                                ↓               │
+                         phần cập nhật ─────── cộng
+                                                ↓
+                                         trạng thái ra
 ~~~
 
-Sơ đồ này có vẻ phức tạp hơn các chương trước.
-
-Nhưng bạn chưa cần nhớ chi tiết.
-
-Chỉ cần nhìn thấy ba ý:
+Chỉ cần giữ ba ý:
 
 ~~~text
 lấy thông tin từ vị trí khác
@@ -265,9 +222,6 @@ biến đổi trạng thái
           +
 giữ đường tín hiệu cũ
 ~~~
-
-Đó là ba hộp lớn ta sẽ lần lượt mở.
-
 ## “Tri thức” nằm ở attention hay FFN?
 
 Đây là câu hỏi hấp dẫn nhưng quá sớm.
@@ -280,24 +234,20 @@ hay:
 
 > FFN là nơi lưu tri thức.
 
-Các thành phần tương tác với nhau qua nhiều lớp.
+Các thành phần tương tác qua nhiều lớp; trọng số đã học nằm ở nhiều nơi; trạng thái còn phụ thuộc ngữ cảnh.
 
-Trọng số đã học nằm ở nhiều nơi.
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> Một thành phần có thể đóng góp quan trọng cho hành vi mà không trở thành “chiếc tủ chứa tri thức” độc lập.
 
-Trạng thái thay đổi theo ngữ cảnh.
-
-Vì vậy cuốn sách sẽ tránh biến một thành phần thành “chiếc tủ chứa tri thức” chỉ vì ta dễ hình dung như vậy.
-
-Ta sẽ hỏi câu nhỏ hơn:
+Câu hỏi tốt hơn là:
 
 > Mỗi thành phần đóng góp kiểu biến đổi nào vào đường đi của trạng thái?
-
-Đó là câu hỏi có thể mở từng bước.
 
 ### Nhớ 3 điều
 
 1. **Một lớp Transformer gồm nhiều bước, không phải một phép tính duy nhất.**
-2. **Cơ chế chú ý (attention) giúp các vị trí trao đổi thông tin; mạng truyền thẳng (FFN) tiếp tục biến đổi trạng thái; đường cộng tắt (residual connection) giữ một đường cho tín hiệu cũ đi tiếp.**
-3. **Nhiều lớp nối tiếp nhau tạo thành một chuỗi cập nhật trạng thái, chứ không có một hộp duy nhất phải “chứa toàn bộ tri thức”.**
+2. **Attention giúp các vị trí trao đổi thông tin; FFN biến đổi trạng thái; residual giữ một đường cho tín hiệu cũ đi tiếp.**
+3. **Nhiều lớp nối tiếp nhau tạo thành một chuỗi cập nhật trạng thái, không phải một hộp duy nhất chứa toàn bộ tri thức.**
 
 **Tiếp theo: [Chương 6 — Cơ chế chú ý: token nhìn những token khác như thế nào?](06-co-che-chu-y.md)**

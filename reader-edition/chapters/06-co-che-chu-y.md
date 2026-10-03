@@ -13,7 +13,7 @@
 > thông tin từ ngữ cảnh
 > ~~~
 >
-> Chương này giải thích để bạn dễ hình dung của **cơ chế chú ý (attention)**. Công thức sẽ chỉ xuất hiện ở mức tối thiểu cần thiết để hiểu ba vai trò: truy vấn, khóa và giá trị.
+> Chương này xây trực giác về **cơ chế chú ý (attention)**. Công thức sẽ chỉ xuất hiện ở mức tối thiểu cần thiết để hiểu ba vai trò: truy vấn, khóa và giá trị.
 
 Hãy đọc câu:
 
@@ -61,6 +61,8 @@ Và mỗi cuốn chứa nội dung.
 
 Ta có thể dùng phép so sánh:
 
+> **[FIGURE F07] — Attention: Query / Key / Value và dòng thông tin**
+>
 ~~~text
 câu hỏi đang tìm gì?
 → truy vấn
@@ -146,54 +148,30 @@ Giá trị tham gia vào câu hỏi:
 
 ## Điểm chú ý
 
-Ta chưa cần công thức đầy đủ.
+Mô hình tạo một **điểm chú ý (attention score)** giữa truy vấn hiện tại và các khóa có thể nhìn tới.
 
-Chỉ cần biết mô hình tạo ra một **điểm chú ý (attention score)** giữa truy vấn hiện tại và các khóa có thể nhìn tới.
+> **MINH HỌA — Illustration**
+>
+> ~~~text
+> "nó" so với "cốc"  →  4,2
+> "nó" so với "bàn"  →  1,1
+> "nó" so với "Nam"  →  0,5
+> ~~~
 
-Ví dụ minh họa:
-
-~~~text
-"nó" so với "cốc"  →  4,2
-"nó" so với "bàn"  →  1,1
-"nó" so với "Nam"  →  0,5
-~~~
-
-Các số trên hoàn toàn là ví dụ.
-
-Điều quan trọng là:
-
-~~~text
-điểm cao hơn
-→ vị trí đó có thể đóng góp nhiều hơn
-~~~
-
-Nhưng điểm thô chưa phải tỷ lệ cuối cùng.
-
+Các số chỉ để minh họa. Ý chính là: điểm cao hơn có thể làm vị trí đó đóng góp nhiều hơn. Nhưng điểm thô chưa phải trọng số cuối cùng.
 ## Từ điểm số sang trọng số
 
-Các điểm thường được đưa qua một hàm gọi là **softmax**.
+Các điểm thường được đưa qua **softmax**, biến một nhóm điểm thành các trọng số dương có tổng bằng 1.
 
-Ta có thể hiểu softmax như một bước biến một nhóm điểm thành các trọng số dương có tổng bằng 1.
+> **MINH HỌA — Illustration**
+>
+> ~~~text
+> cốc   4,2                 cốc   0,90
+> bàn   1,1   → softmax →   bàn   0,06
+> Nam   0,5                 Nam   0,04
+> ~~~
 
-Ví dụ tưởng tượng:
-
-~~~text
-điểm thô
-
-cốc   4,2
-bàn   1,1
-Nam   0,5
-
-        ↓ softmax
-
-trọng số chú ý
-
-cốc   0,90
-bàn   0,06
-Nam   0,04
-~~~
-
-Sau đó các giá trị được trộn theo những trọng số này.
+Sau đó các **giá trị (V)** được trộn theo những trọng số đó.
 
 ~~~text
 0,90 × giá trị(cốc)
@@ -202,11 +180,8 @@ Sau đó các giá trị được trộn theo những trọng số này.
 +
 0,04 × giá trị(Nam)
 ↓
-thông tin được đưa về vị trí "nó"
+thông tin đưa về vị trí "nó"
 ~~~
-
-Một lần nữa: số liệu chỉ để minh họa.
-
 ## Token hiện tại có được nhìn tương lai không?
 
 Trong mô hình sinh văn bản kiểu chỉ dùng bộ giải mã, vị trí hiện tại thường không được phép dùng những token ở tương lai.
@@ -239,11 +214,7 @@ Nó không có nghĩa mô hình đã chứng minh quan hệ nhân quả trong th
 
 ## Một đầu chú ý có đủ không?
 
-Nếu chỉ có một cách đánh giá quan hệ, mô hình sẽ bị hạn chế.
-
 Trong thực tế, attention thường có nhiều **đầu chú ý (attention heads)**.
-
-Có thể hình dung mỗi đầu có bộ phép chiếu Q/K/V riêng và có thể học những kiểu quan hệ khác nhau.
 
 ~~~text
 cùng trạng thái đầu vào
@@ -256,55 +227,32 @@ cùng trạng thái đầu vào
         kết hợp lại
 ~~~
 
-Ta không nên gắn nhãn cứng:
+Không nên gắn nhãn cứng kiểu “đầu 1 = ngữ pháp, đầu 2 = địa lý”. Chức năng có thể phân tán và phụ thuộc ngữ cảnh.
 
-> đầu 1 = ngữ pháp  
-> đầu 2 = địa lý  
-> đầu 3 = suy luận
-
-Có những nghiên cứu tìm thấy các khuôn mẫu thú vị ở một số đầu, nhưng chức năng trong mô hình thật có thể phân tán và phụ thuộc ngữ cảnh.
-
-> **Ghi chú về GQA và MQA**
+> **SIDEBAR — GQA và MQA**
 >
-> Cách hình dung “mỗi đầu chú ý có các phép chiếu Q/K/V riêng” phù hợp để hiểu **multi-head attention** theo dạng cơ bản, nhưng không phải mọi LLM hiện đại đều tổ chức Q, K và V theo đúng cách đó.
+> Mô hình nhiều đầu cơ bản thường được giải thích bằng các đầu Q/K/V. Nhưng không phải mọi LLM hiện đại đều có số query heads và key/value heads bằng nhau.
 >
-> Một số mô hình dùng **Multi-Query Attention (MQA)**, trong đó nhiều đầu truy vấn (query heads) có thể dùng chung phần khóa và giá trị (key/value). Một dạng trung gian phổ biến hơn là **Grouped-Query Attention (GQA)**, trong đó nhiều query heads được chia thành các nhóm và mỗi nhóm dùng chung một số key/value heads.
+> **Multi-Query Attention (MQA)** cho nhiều query heads dùng chung key/value. **Grouped-Query Attention (GQA)** chia query heads thành nhóm và dùng ít key/value heads hơn số query heads.
 >
-> Các thiết kế này giúp giảm lượng dữ liệu cần lưu và xử lý, đặc biệt đối với **KV cache** khi sinh văn bản.
+> Mục đích thực dụng quan trọng là giảm lượng key/value cần lưu và xử lý, đặc biệt với **KV cache** khi sinh văn bản.
 >
-> Cuốn sách này không đi sâu vào MQA/GQA. Khi giải thích attention, ta vẫn dùng mô hình Q/K/V cơ bản để xây trực giác; điều cần nhớ là **số query heads và số key/value heads trong một mô hình thật không nhất thiết bằng nhau**.
-
+> Cuốn sách không đi sâu vào GQA/MQA; mô hình Q/K/V cơ bản vẫn đủ để hiểu cơ chế chú ý ở mức của chương này.
 ## Attention có phải lời giải thích cho “mô hình đang nghĩ gì” không?
 
 Không nên nói như vậy.
 
-Trọng số chú ý cho ta biết một phần cách thông tin được trộn trong một phép tính cụ thể.
+Trọng số chú ý cho ta biết một phần cách thông tin được trộn trong một phép tính cụ thể. Nhưng toàn mô hình còn có nhiều đầu, nhiều lớp, FFN, residual và chuẩn hóa.
 
-Nhưng toàn mô hình còn có:
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> ~~~text
+> trọng số chú ý
+> ≠
+> toàn bộ lời giải thích cho dự đoán
+> ~~~
 
-- nhiều đầu chú ý;
-- nhiều lớp;
-- FFN;
-- đường cộng tắt;
-- các phép chuẩn hóa;
-- nhiều biến đổi khác.
-
-Do đó:
-
-~~~text
-trọng số chú ý
-≠
-toàn bộ lời giải thích cho dự đoán
-~~~
-
-Một bản đồ attention đẹp có thể hữu ích.
-
-Nhưng nó không tự động trở thành bằng chứng đầy đủ về ý nghĩa, nguyên nhân hay “suy nghĩ” của mô hình.
-
-Đây là một ví dụ sớm cho nguyên tắc lớn của cuốn sách:
-
-> **Quan sát được một tín hiệu chưa có nghĩa ta đã giải thích được cả cơ chế.**
-
+Một bản đồ attention có thể hữu ích, nhưng không tự động trở thành bằng chứng đầy đủ về ý nghĩa, nguyên nhân hay “suy nghĩ” của mô hình.
 ## Attention làm xong thì sao?
 
 Sau attention, trạng thái của mỗi vị trí đã nhận thêm thông tin từ những vị trí khác.

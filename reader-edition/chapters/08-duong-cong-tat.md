@@ -50,9 +50,7 @@ F(x)
 x + F(x)
 ~~~
 
-Không cần học công thức sâu hơn.
-
-Ý quan trọng là:
+Không cần công thức sâu hơn. Ý quan trọng là:
 
 ~~~text
 trạng thái mới
@@ -113,6 +111,8 @@ ta dễ hình dung như mỗi bước viết đè hoàn toàn lên bước trư�
 
 Nhưng với residual:
 
+> **[FIGURE F09] — Residual stream: giữ đường cũ + cộng phần cập nhật**
+>
 ~~~text
 x0
 ↓
@@ -203,20 +203,9 @@ Câu đúng hơn là:
 
 ## Một ví dụ đời thường khác
 
-Hãy tưởng tượng một bản đồ được chỉnh sửa qua nhiều phiên bản.
+Hãy tưởng tượng một bản đồ được chỉnh sửa qua nhiều phiên bản: nền cũ vẫn còn, rồi mỗi phiên bản thêm một lớp thông tin mới.
 
-Phiên bản 1 có đường phố.
-
-Phiên bản 2 thêm trạm xe buýt.
-
-Phiên bản 3 thêm tuyến tàu.
-
-Phiên bản 4 thêm tình trạng giao thông.
-
-Nếu mỗi bước giữ lại nền cũ rồi thêm lớp thông tin mới, ta có một quá trình tích lũy.
-
-Đường cộng tắt không phải một lớp bản đồ theo nghĩa đen, nhưng trực giác “giữ nền + thêm thay đổi” khá gần với cách ta nên nghĩ về dòng trạng thái.
-
+Residual không phải các lớp bản đồ theo nghĩa đen, nhưng trực giác **giữ nền + thêm thay đổi** giúp ta hiểu vì sao trạng thái có thể được cập nhật dần thay vì bị viết đè hoàn toàn.
 ## Dòng trạng thái tích lũy
 
 Khi residual lặp lại qua nhiều lớp, người ta thường nói tới một **dòng residual (residual stream)**.
@@ -251,224 +240,42 @@ thứ ta thật sự muốn so sánh không phải chữ token.
 
 Ta muốn nhìn **trạng thái số trên dòng residual** ở các thời điểm khác nhau.
 
-## Câu hỏi mở: vì sao không ghi phần đã học lại vào tệp mô hình để lần sau đi tắt?
+## SIDEBAR — Có thể lưu lại trạng thái để đi tắt không?
 
-Đây là một câu hỏi rất tự nhiên khi ta vừa thấy:
+Một câu hỏi tự nhiên là: nếu mô hình đã xử lý một ngữ cảnh, tại sao không lưu trạng thái đó để lần sau khỏi tính lại?
 
-~~~text
-x
-↓
-x + F(x)
-↓
-x + F(x) + G(...)
-↓
-...
-~~~
-
-Ta có thể nghĩ:
-
-> Nếu mô hình đã từng gặp một ngữ cảnh và đã tạo ra một phần thay đổi hữu ích, tại sao không ghi luôn phần đó xuống tệp mô hình?
-
-Ví dụ trực giác:
+Điểm cần tách rõ là:
 
 ~~~text
-ban đầu:
-x
-
-đã gặp a, b:
-x + a + b
-
-sau này gặp thêm c:
-x + a + b + c
-~~~
-
-Nếu lần sau gặp lại đúng ngữ cảnh, liệu mô hình có thể lấy sẵn:
-
-~~~text
-x + a + b + c
-~~~
-
-rồi bỏ qua một số lớp?
-
-Ý tưởng này **không vô lý**.
-
-Nhưng có một điểm rất quan trọng cần tách ra.
-
-### Tệp mô hình lưu gì?
-
-Tệp mô hình chủ yếu lưu những thứ đã được học tương đối ổn định như:
-
-- trọng số;
-- bảng nhúng;
-- cấu trúc cần thiết để dựng mạng;
-- một số thông tin cấu hình.
-
-Còn:
-
-~~~text
-x
-F(x)
-x + F(x)
-~~~
-
-trong ví dụ của chương này là **trạng thái đang được tạo ra trong lúc chạy**.
-
-Nó phụ thuộc vào:
-
-- token hiện tại;
-- vị trí;
-- toàn bộ ngữ cảnh đang có;
-- trạng thái từ lớp trước;
-- trọng số của chính lớp đang chạy.
-
-Vì vậy:
-
-~~~text
-trọng số trong tệp mô hình
+trọng số trong model
 ≠
 trạng thái tạm thời của một lần chạy
 ~~~
 
-### Vì sao không thể đơn giản viết thành x + a + b + c?
+Trạng thái runtime phụ thuộc token, vị trí, toàn bộ ngữ cảnh, trạng thái lớp trước và trọng số hiện tại. Các cập nhật ở lớp sau lại phụ thuộc kết quả lớp trước, nên không thể coi chúng như những mảnh cố định có thể cộng lại tùy ý.
 
-Bởi các phần thay đổi không hoàn toàn độc lập.
+Có những kỹ thuật gần với ý tưởng “đi tắt”, chẳng hạn giữ lại trạng thái cần thiết của prefix để tránh tính lại phần đã xử lý. **KV cache** và một số dạng prefix/prompt cache thuộc tinh thần này.
 
-Lớp sau không chỉ nhận lại x ban đầu.
-
-Nó nhận **trạng thái đã bị lớp trước thay đổi**.
-
-Ví dụ đơn giản hơn:
-
-~~~text
-x1 = x0 + F1(x0)
-
-x2 = x1 + F2(x1)
-
-x3 = x2 + F3(x2)
-~~~
-
-Chú ý:
-
-~~~text
-F2 nhận x1
-không phải x0
-
-F3 nhận x2
-không phải x0
-~~~
-
-Do đó ta không thể mặc định viết:
-
-~~~text
-x3 = x0 + a + b + c
-~~~
-
-với a, b, c là ba mảnh cố định có thể lấy ra độc lập rồi cộng lại ở bất kỳ ngữ cảnh nào.
-
-Phần thay đổi ở lớp sau phụ thuộc vào kết quả của lớp trước.
-
-Nói cách khác:
-
-> **Quá trình có tính phụ thuộc đường đi.**
-
-### Cùng một token nhưng context khác thì phần thay đổi cũng khác
-
-Giả sử token là:
-
-~~~text
-đá
-~~~
-
-Trong:
-
-~~~text
-hòn đá
-~~~
-
-và:
-
-~~~text
-đá bóng
-~~~
-
-trạng thái đi vào các lớp đã khác nhau.
-
-Vì vậy F(x) cũng có thể khác.
-
-Nếu ta ghi mọi trạng thái theo mọi context vào tệp mô hình, số trường hợp có thể tăng cực lớn.
-
-Ta sẽ dần biến tệp mô hình thành một kho chứa vô số trạng thái từng gặp.
-
-### Nhưng có cách nào gần với ý tưởng này không?
-
-Có.
-
-Trong hệ thống hiện đại đã có những kỹ thuật mang tinh thần tương tự, nhưng chúng không đơn giản là “ghi x + F(x) vào weights”.
-
-Ví dụ:
-
-~~~text
-cùng prefix đã xử lý
-↓
-giữ lại trạng thái trung gian cần thiết
-↓
-không tính lại toàn bộ prefix
-~~~
-
-Đó là trực giác của **bộ nhớ đệm khóa–giá trị (KV cache)** và một số dạng **bộ nhớ đệm phần đầu vào (prefix cache / prompt cache)**.
-
-Ngoài ra còn có những hướng khác như:
-
-- bộ nhớ ngoài (external memory);
-- trọng số thay đổi nhanh (fast weights);
-- học trong lúc chạy (online learning);
-- thích nghi ở thời điểm suy luận (test-time adaptation);
-- kiến trúc cho phép bỏ qua một số lớp khi đã đủ tự tin.
-
-Nhưng mỗi hướng đều cần một cơ chế riêng để trả lời:
-
-~~~text
-lưu cái gì?
-↓
-khi nào được dùng lại?
-↓
-ngữ cảnh nào được coi là đủ giống?
-↓
-dùng lại có còn đúng không?
-↓
-có làm mô hình thay đổi ngoài ý muốn không?
-~~~
-
-### Một ranh giới rất quan trọng
-
-Nếu chỉ **cache trạng thái của một context đã xử lý**, ta đang tránh tính lại một phần công việc.
-
-Nếu **ghi ngược điều mới học vào trọng số của model**, ta đang thay đổi chính mô hình.
-
-Hai việc này khác nhau.
+Nhưng cần giữ ranh giới:
 
 ~~~text
 CACHE
-→ nhớ kết quả của một lần xử lý
+→ dùng lại kết quả của một lần xử lý
 
 UPDATE MODEL
 → thay đổi thứ mô hình đã học
 ~~~
 
+Hai việc này khác nhau. Sidebar này chỉ mở trực giác; cuốn sách không đi sâu vào online learning, fast weights hay test-time adaptation.
 ## Đây có phải nơi “mảnh tri thức” chạy qua?
 
-Có thể nói đây là một nơi rất quan trọng để theo dõi sự thay đổi.
-
-Nhưng vẫn không nên kết luận:
+Dòng residual là nơi rất hữu ích để theo dõi sự thay đổi, nhưng không nên kết luận:
 
 > “Dòng residual chính là tri thức.”
 
-Nó là một cấu trúc số mà nhiều thành phần của mô hình liên tục đọc, biến đổi và cập nhật.
-
-Tri thức mà mô hình thể hiện còn phụ thuộc vào trọng số, ngữ cảnh, kiến trúc và cách đầu ra được tạo.
+Nó là một cấu trúc số được nhiều thành phần liên tục đọc, biến đổi và cập nhật. Hành vi của mô hình còn phụ thuộc trọng số, ngữ cảnh, kiến trúc và các phép biến đổi tiếp theo.
 
 Ta đang theo dấu **trạng thái**, không tìm một viên tri thức vật lý.
-
 ## Nhiều residual nối tiếp nhau sẽ tạo ra gì?
 
 Ta đã có:

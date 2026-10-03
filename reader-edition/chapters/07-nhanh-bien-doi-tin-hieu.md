@@ -26,22 +26,15 @@ Nó còn phải được biến đổi.
 
 ## Một phép so sánh đơn giản
 
-Hãy tưởng tượng bạn đang đọc một hồ sơ.
+Attention gần với câu hỏi:
 
-Attention giống bước:
+> “Tôi cần lấy thêm thông tin nào từ những vị trí khác?”
 
-> “Tôi cần lấy thêm thông tin nào từ những trang khác?”
+FFN gần với câu hỏi:
 
-Sau khi lấy được thông tin đó, bạn vẫn còn phải:
+> “Sau khi có thông tin đó, trạng thái tại vị trí này nên được biến đổi thế nào?”
 
-> “Ghép nó với trạng thái hiện tại và xử lý tiếp.”
-
-FFN gần với bước thứ hai hơn.
-
-Nó không chủ yếu đi lấy dữ liệu từ token khác.
-
-Nó biến đổi trạng thái của **từng vị trí** bằng cùng một bộ trọng số đã học.
-
+FFN không chủ yếu đi lấy dữ liệu từ token khác; nó biến đổi trạng thái của **từng vị trí** bằng cùng một bộ trọng số đã học.
 ## “Truyền thẳng” nghĩa là gì?
 
 Tên tiếng Anh là **Feed-Forward Network, FFN**.
@@ -50,6 +43,8 @@ Tên tiếng Anh là **Feed-Forward Network, FFN**.
 
 Ở mức rất đơn giản:
 
+> **[FIGURE F08] — FFN: mở rộng → phi tuyến → thu về**
+>
 ~~~text
 trạng thái vào
      ↓
@@ -70,45 +65,22 @@ Nó tạo ra một phép biến đổi học được.
 
 ## Vì sao lại mở rộng chiều?
 
-Giả sử trạng thái hiện tại là một vectơ có kích thước:
+FFN thường đưa trạng thái sang một không gian lớn hơn rồi đưa về kích thước ban đầu.
 
-~~~text
-d
-~~~
+> **MINH HỌA — Illustration**
+>
+> ~~~text
+> [ trạng thái 4 chiều ]
+>          ↓
+> [ không gian 12 chiều ]
+>          ↓
+> [ trạng thái 4 chiều ]
+> ~~~
 
-FFN thường đưa nó sang một không gian lớn hơn:
-
-~~~text
-d
-↓
-một kích thước lớn hơn
-↓
-d
-~~~
-
-Có thể hình dung như mở một bản ghi ngắn thành một không gian làm việc rộng hơn để thực hiện biến đổi, rồi nén kết quả về kích thước mà phần còn lại của mô hình đang dùng.
-
-Ví dụ minh họa:
-
-~~~text
-[ trạng thái 4 chiều ]
-        ↓
-[ không gian 12 chiều ]
-        ↓
-[ trạng thái 4 chiều ]
-~~~
-
-Các con số chỉ để minh họa.
-
-Mô hình thật có kích thước lớn hơn nhiều.
-
+Các con số chỉ để minh họa. Trực giác hữu ích là: mô hình có một không gian trung gian rộng hơn để thực hiện biến đổi trước khi quay về kích thước mà phần còn lại của mạng đang dùng.
 ## Tại sao không chỉ dùng phép biến đổi tuyến tính?
 
-Nếu ta chỉ liên tục nhân với ma trận rồi cộng mà không có phần phi tuyến, khả năng biểu diễn của chuỗi phép biến đổi sẽ bị hạn chế.
-
-Vì vậy FFN có một bước **phi tuyến (nonlinearity)**.
-
-Có thể hình dung:
+Nếu chuỗi biến đổi chỉ gồm các phép tuyến tính nối tiếp, khả năng biểu diễn sẽ bị hạn chế. Vì vậy FFN có một bước **phi tuyến (nonlinearity)**.
 
 ~~~text
 trạng thái
@@ -122,12 +94,7 @@ biến đổi tiếp
 trạng thái mới
 ~~~
 
-Phi tuyến cho phép mô hình tạo ra những kiểu biến đổi phong phú hơn.
-
-Một số mô hình hiện đại còn dùng các cơ chế **gating** — có thể hiểu là những nhánh giúp điều tiết phần tín hiệu nào được giữ hoặc nhấn mạnh.
-
-Tên cụ thể như SwiGLU có thể xuất hiện trong tài liệu kỹ thuật, nhưng chưa cần học ở đây.
-
+Một số kiến trúc còn dùng **gating** để điều tiết tín hiệu. Cuốn sách dừng ở trực giác này, không mở rộng thành khảo sát các biến thể như SwiGLU.
 ## Attention và FFN khác nhau ở đâu?
 
 Ta có thể dùng một sơ đồ ngắn:
@@ -154,76 +121,30 @@ Cả hai đều tham gia vào trạng thái cuối.
 
 ## Một ví dụ với từ “đá”
 
-Quay lại hai câu:
+Quay lại:
 
 ~~~text
 Tôi nhặt một hòn đá.
-
 Tôi thích đá bóng.
 ~~~
 
-Attention có thể giúp vị trí “đá” nhận những tín hiệu khác nhau từ ngữ cảnh xung quanh.
-
-Sau đó FFN nhận hai trạng thái đã khác nhau đó.
-
-Vì đầu vào khác, kết quả biến đổi cũng có thể khác.
-
-Ta có thể hình dung:
+Attention có thể làm hai trạng thái “đá” nhận tín hiệu ngữ cảnh khác nhau. FFN sau đó nhận hai đầu vào khác nhau và có thể tạo hai đầu ra khác nhau.
 
 ~~~text
-"đá" trong câu A
-        ↓
-ngữ cảnh A
-        ↓
-trạng thái A
-        ↓
-FFN
-        ↓
-trạng thái A'
-
-"đá" trong câu B
-        ↓
-ngữ cảnh B
-        ↓
-trạng thái B
-        ↓
-FFN
-        ↓
-trạng thái B'
+trạng thái A → FFN → trạng thái A'
+trạng thái B → FFN → trạng thái B'
 ~~~
 
-FFN không cần “biết” từ đá theo cách con người.
-
-Nó chỉ thực hiện phép biến đổi số đã học trên trạng thái hiện tại.
-
-Nhưng chính chuỗi biến đổi đó góp phần làm hai ngữ cảnh đi theo hai đường khác nhau.
-
+FFN không cần “biết” từ đá theo cách con người; nó thực hiện phép biến đổi số đã học trên trạng thái hiện tại.
 ## FFN có phải nơi chứa tri thức không?
 
-Đây là một câu hỏi rất dễ bị trả lời quá mạnh.
+Đây là câu hỏi dễ bị trả lời quá mạnh.
 
-Một số nghiên cứu cho thấy các trọng số trong FFN có thể liên quan tới nhiều mẫu thông tin và hành vi mà mô hình đã học.
+Các trọng số FFN có thể liên quan tới nhiều mẫu thông tin và hành vi mà mô hình đã học. Nhưng mô hình còn có embedding, attention, residual, nhiều lớp, trạng thái theo ngữ cảnh và lớp đầu ra.
 
-Nhưng câu:
-
-> “Tri thức nằm trong FFN.”
-
-là quá đơn giản.
-
-Vì mô hình còn có:
-
-- bảng nhúng;
-- attention;
-- nhiều lớp;
-- đường cộng tắt;
-- trạng thái theo ngữ cảnh;
-- lớp đầu ra;
-- rất nhiều trọng số tương tác với nhau.
-
-Do đó cuốn sách sẽ giữ câu nói thận trọng hơn:
-
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
 > **FFN là một phần quan trọng của quá trình biến đổi trạng thái đã học, nhưng không nên được coi như một chiếc tủ chứa tri thức độc lập.**
-
 ## Một lớp có hai kiểu chuyển động
 
 Tới đây, ta có thể nhìn một lớp theo hai hướng:
