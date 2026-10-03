@@ -254,7 +254,23 @@ trọng số trong model
 trạng thái tạm thời của một lần chạy
 ~~~
 
-Trạng thái được tạo ra **khi mô hình đang chạy** phụ thuộc token, vị trí, toàn bộ ngữ cảnh, trạng thái lớp trước và trọng số hiện tại. Các cập nhật ở lớp sau lại phụ thuộc kết quả lớp trước, nên không thể coi chúng như những mảnh cố định có thể cộng lại tùy ý.
+Trạng thái được tạo ra **khi mô hình đang chạy** phụ thuộc token, vị trí, toàn bộ ngữ cảnh, trạng thái lớp trước và trọng số hiện tại.
+
+Điểm quan trọng là các lớp có **phụ thuộc đường đi**. Ví dụ:
+
+~~~text
+x1 = x0 + F1(x0)
+x2 = x1 + F2(x1)
+x3 = x2 + F3(x2)
+~~~
+
+F2 nhận x1, không phải x0; F3 nhận x2, không phải x0. Vì vậy ta không thể mặc định rằng trạng thái cuối chỉ là:
+
+~~~text
+x0 + a + b + c
+~~~
+
+với a, b, c là ba mảnh cố định có thể lấy ra rồi cộng lại trong mọi ngữ cảnh.
 
 Có những kỹ thuật gần với ý tưởng “đi tắt”, chẳng hạn giữ lại trạng thái cần thiết của phần đầu vào đã xử lý để tránh tính lại. **Bộ nhớ đệm khóa–giá trị (KV cache)** và một số dạng bộ nhớ đệm phần đầu vào thuộc tinh thần này.
 
