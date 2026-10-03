@@ -2,7 +2,9 @@
 
 **Scope:** Vietnamese Reader Edition planning only  
 **Source baseline:** canonical Vietnamese Research Edition in `vi/`  
+**Research baseline commit:** `c57d2488cf9bd198d562e0410163c2e8cd7fd6c5`  
 **Predecessor gate:** `TOKEN_COMMERCIAL_EDITORIAL_AUDIT_V1`  
+**Audit commit:** `89b9b0e1e0991155a6b75e2bdd281a1a9af3e8bc`  
 **Manuscript mutation in this step:** NONE  
 **Status:** FROZEN REVISION PLAN  
 
