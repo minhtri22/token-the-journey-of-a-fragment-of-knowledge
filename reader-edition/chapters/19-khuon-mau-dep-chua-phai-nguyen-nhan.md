@@ -57,7 +57,7 @@ Trong hệ thống máy tính cũng vậy.
 
 > **KẾT QUẢ ĐO — Measured Result `[E-MECH-01]`**
 >
-> Trong phép đo mục tiêu, so sánh LM-head Q6 với FFN-down Q6 cho thấy:
+> Trong **W-S** của phép đo mục tiêu, so sánh LM-head Q6 với FFN-down Q6 cho thấy:
 >
 > ~~~text
 > DRAM read amplification
