@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you cite this book, please use the metadata below."
+title: "TOKEN — The Journey of a Fragment of Knowledge"
+type: book
+authors:
+  - family-names: "Nguyễn"
+    given-names: "Minh Trí"
+version: "0.1-research"
+date-released: 2026-10-03
+url: "https://github.com/minhtri22/token-the-journey-of-a-fragment-of-knowledge"
+repository-code: "https://github.com/minhtri22/token-the-journey-of-a-fragment-of-knowledge"
+abstract: >-
+  A research-derived book that follows a token from text through representation,
+  Transformer computation, runtime and hardware execution, then through measurement,
+  evidence and the limits of justified interpretation.
