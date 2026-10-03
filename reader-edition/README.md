@@ -12,6 +12,7 @@ This namespace is isolated from the public Research Edition on `main`.
 - Part III — Chương 11–16: **REVISED + QA PASS**.
 - Part IV — Chương 17–20: **REVISED + QA PASS**.
 - Evidence Notes + provenance: **PASS WITH EXPLICIT RAW-ARTIFACT LIMITATIONS**.
+- Glossary: **PASS — 72/72 frozen vocabulary entries materialized**.
 - Public Research Edition on `main`: unchanged.
 
 ## Frozen references
@@ -22,7 +23,7 @@ This namespace is isolated from the public Research Edition on `main`.
 
 Current next valid step:
 
-`TOKEN_VI_READER_EDITION_GLOSSARY_BUILD`
+`TOKEN_VI_READER_EDITION_FULL_BOOK_CONTINUITY_TERMINOLOGY_REPETITION_PASS`
 
 QA records:
 - `qa/TOKEN_VI_READER_EDITION_PART_I_QA.md`
@@ -30,3 +31,4 @@ QA records:
 - `qa/TOKEN_VI_READER_EDITION_PART_III_QA.md`
 - `qa/TOKEN_VI_READER_EDITION_PART_IV_QA.md`
 - `qa/TOKEN_VI_READER_EDITION_EVIDENCE_PROVENANCE_QA.md`
+- `qa/TOKEN_VI_READER_EDITION_GLOSSARY_QA.md`
