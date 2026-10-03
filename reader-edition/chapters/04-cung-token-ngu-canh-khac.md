@@ -60,6 +60,8 @@ Câu B:
 
 Token “đá” có cùng danh tính.
 
+> **[FIGURE F05] — Cùng một token, hai ngữ cảnh, hai quỹ đạo trạng thái**
+
 Nếu cùng một bảng nhúng được dùng, phần biểu diễn lấy trực tiếp từ danh tính token đó bắt đầu từ cùng một hàng số đã học.
 
 Nhưng hai token “đá” không đứng trong cùng hoàn cảnh.
@@ -174,41 +176,9 @@ Do đó, cùng một danh tính token có thể đi tới hai trạng thái khá
 
 ## Một cách hình dung đời thường
 
-Hãy tưởng tượng bạn nhận được một tờ giấy chỉ ghi:
+Một cái tên có thể giữ nguyên trong khi thông tin quanh nó thay đổi. “Mai” đứng một mình cho ta rất ít dữ kiện; thêm “ở bệnh viện”, “mặc áo blouse trắng”, “đang khám bệnh nhân” làm trạng thái hiểu của ta thay đổi.
 
-~~~text
-Mai
-~~~
-
-Bạn chưa biết “Mai” là ai.
-
-Sau đó tờ giấy được bổ sung:
-
-~~~text
-Mai đang ở bệnh viện.
-~~~
-
-Bạn có thêm thông tin.
-
-Rồi:
-
-~~~text
-Mai mặc áo blouse trắng.
-~~~
-
-Rồi:
-
-~~~text
-Mai đang khám cho bệnh nhân.
-~~~
-
-Tên “Mai” không đổi.
-
-Nhưng trạng thái hiểu của bạn về người đang được nói tới đã thay đổi.
-
-Mô hình không hiểu theo đúng cách con người hiểu, và trạng thái số trong Transformer không phải một “hồ sơ bằng lời”.
-
-Nhưng phép so sánh này giúp ta giữ đúng trực giác:
+Mô hình không hiểu theo đúng cách con người hiểu, nhưng phép so sánh giúp giữ đúng trực giác:
 
 > **Danh tính đầu vào có thể giữ nguyên trong khi trạng thái dùng để xử lý nó được cập nhật theo ngữ cảnh.**
 
@@ -278,49 +248,17 @@ Chỉ cần nhớ:
 
 Chưa thể kết luận như vậy.
 
-Ta có thể quan sát rằng trạng thái số thay đổi theo ngữ cảnh.
-
-Ta có thể kiểm tra rằng mô hình dự đoán khác nhau khi ngữ cảnh khác nhau.
-
-Nhưng từ đó nhảy thẳng tới câu:
-
-> “Mô hình hiểu từ này giống hệt con người.”
-
-là đi quá bằng chứng.
-
-Ta nên giữ câu nói hẹp hơn:
-
-> **Mô hình tạo ra các trạng thái phụ thuộc ngữ cảnh, và những trạng thái đó được dùng cho các phép tính tiếp theo.**
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> Ta có thể nói mô hình tạo ra các trạng thái phụ thuộc ngữ cảnh và dùng chúng cho các phép tính tiếp theo. Từ đó nhảy thẳng tới “mô hình hiểu giống hệt con người” là vượt quá bằng chứng.
 
 Đây là điều đủ để đi tiếp.
 
 ## “Mảnh tri thức” bây giờ đang ở đâu?
 
-Ta đã loại thêm một cách hiểu quá đơn giản.
+Ta đã loại thêm một cách hiểu quá đơn giản. Nó không nằm nguyên trong token, token ID hay biểu diễn ban đầu.
 
-Nó không nằm nguyên trong:
-
-~~~text
-token
-~~~
-
-Nó cũng không nằm nguyên trong:
-
-~~~text
-mã token
-~~~
-
-Và giờ ta thấy:
-
-~~~text
-biểu diễn ban đầu
-~~~
-
-cũng chưa phải câu chuyện hoàn chỉnh.
-
-Trạng thái còn tiếp tục thay đổi khi token đi qua nhiều lớp.
-
-Có thể hình dung:
+Trạng thái còn tiếp tục thay đổi khi token đi qua nhiều lớp:
 
 ~~~text
 token
@@ -331,14 +269,10 @@ ngữ cảnh tác động
 ↓
 trạng thái thay đổi
 ↓
-ngữ cảnh tiếp tục được tích hợp
-↓
-trạng thái lại thay đổi
-↓
-...
+nhiều lớp tiếp tục cập nhật
 ~~~
 
-Nếu muốn hiểu “mảnh tri thức” đang đi đâu, ta buộc phải nhìn vào chính chuỗi biến đổi này.
+Nếu muốn hiểu “mảnh tri thức” đang đi đâu, ta phải nhìn vào chính chuỗi biến đổi này.
 
 ## Nhưng các lớp thực sự làm gì?
 

@@ -38,31 +38,13 @@ Nhưng nó đủ để ta đi bước đầu tiên mà không bị ngợp.
 
 ## Vì sao không nói luôn “token là một từ”?
 
-Bởi vì mô hình không nhất thiết chia văn bản theo cách con người chia từ.
+Bởi mô hình không bắt buộc chia văn bản theo cách con người chia từ.
 
-Hãy lấy một ví dụ khác:
+Ví dụ, “ChatGPT” có thể được giữ thành một token hoặc chia thành nhiều mảnh tùy tokenizer. Điều tương tự xảy ra với từ hiếm, tên riêng, số, dấu câu, khoảng trắng, tiếng Việt, tiếng Anh và mã nguồn.
 
-~~~text
-ChatGPT
-~~~
+Vì vậy cách nói tốt hơn là:
 
-Một bộ tách có thể giữ nguyên thành một mảnh.
-
-Một bộ khác có thể chia thành:
-
-~~~text
-Chat | GPT
-~~~
-
-Một bộ khác nữa có thể chia khác.
-
-Điều tương tự xảy ra với từ dài, từ hiếm, tên riêng, số, dấu câu, khoảng trắng, tiếng Việt, tiếng Anh và mã nguồn.
-
-Vì vậy câu “một token là một từ” rất dễ nhớ nhưng quá mạnh.
-
-Cách nói tốt hơn là:
-
-> **Một token thường tương ứng với một mảnh văn bản. Mảnh đó có thể là một từ, một phần của từ, dấu câu hoặc một chuỗi ký tự khác.**
+> **Một token có thể là một từ, một phần của từ, dấu câu hoặc một chuỗi ký tự khác.**
 
 ## Ai quyết định cách chia?
 
@@ -75,6 +57,8 @@ Cũng không phải mỗi lớp Transformer tự nghĩ ra cách chia riêng.
 Có một thành phần đứng trước mô hình làm việc đó.
 
 Ta gọi nó là **bộ tách và mã hóa văn bản (tokenizer)**.
+
+> **[FIGURE F02] — Văn bản → tokenizer → token pieces → token IDs**
 
 Có thể hình dung:
 
@@ -92,56 +76,15 @@ Sau này nếu bạn đọc tài liệu thấy chữ tokenizer, bạn đã biế
 
 ## Token không nhất thiết nhìn giống phần chữ ta tưởng tượng
 
-Ta thích nghĩ rằng:
+Một token có thể chứa dấu cách ở đầu, một từ có thể bị chia thành nhiều token, và ranh giới token có thể khác cách ta tự chia bằng mắt.
 
-~~~text
-token
-=
-một đoạn chữ có nghĩa
-~~~
-
-Nhưng hệ thống không bắt buộc phải chiều theo trực giác đó.
-
-Một token có thể chứa dấu cách ở đầu.
-
-Một từ có thể bị chia làm nhiều token.
-
-Hai từ ngắn có thể được biểu diễn theo cách không giống cách ta tự chia bằng mắt.
-
-Điều này không phải lỗi.
-
-Mục tiêu của bộ tách không phải tạo ra những mảnh đẹp nhất cho con người.
-
-Mục tiêu là tạo ra một bộ đơn vị mà mô hình có thể xử lý hiệu quả và nhất quán.
+Điều này không phải lỗi. Mục tiêu của tokenizer là tạo ra một hệ đơn vị mà mô hình có thể xử lý nhất quán, không phải những mảnh đẹp nhất cho con người.
 
 ## Một ví dụ gần gũi: bộ chữ ghép
 
-Hãy tưởng tượng ta chỉ có một hộp những mảnh ghép chữ.
+Hãy tưởng tượng một hộp mảnh chữ không chứa mọi từ hoàn chỉnh, mà chứa những mảnh có thể ghép lại. Muốn tạo “cà phê rất ngon.”, hệ thống có thể cần nhiều mảnh nhỏ.
 
-Trong hộp không có mọi từ tiếng Việt.
-
-Thay vào đó có những mảnh như:
-
-~~~text
-"cà"
-" ph"
-"ê"
-" rất"
-" ngon"
-"."
-~~~
-
-Muốn tạo câu “cà phê rất ngon.”, ta ghép những mảnh có sẵn lại.
-
-Bộ token hoạt động gần với trực giác đó hơn là một cuốn từ điển “mỗi từ đúng một mục”.
-
-Hình dung này vẫn chưa phải toàn bộ cơ chế của các bộ tách hiện đại.
-
-Nhưng nó giúp trả lời một câu hỏi quan trọng:
-
-> Vì sao một từ đôi khi lại tốn nhiều token?
-
-Bởi hệ thống có thể phải dùng nhiều mảnh nhỏ hơn để ghép thành từ đó.
+Phép so sánh này không mô tả đầy đủ mọi tokenizer hiện đại, nhưng giải thích được một điều quan trọng: **một từ đôi khi cần nhiều token vì hệ thống phải ghép từ những đơn vị có sẵn.**
 
 ## Token có ý nghĩa không?
 
@@ -179,13 +122,13 @@ Mỗi token được gắn với một mã số.
 
 Ta gọi đó là **mã token (token ID)**.
 
-Ví dụ minh họa:
-
-~~~text
-"Paris" → 8421
-~~~
-
-Con số 8421 ở đây chỉ là ví dụ.
+> **MINH HỌA — Illustration**
+>
+> ~~~text
+> "Paris" → 8421
+> ~~~
+>
+> Con số 8421 chỉ là ví dụ, không phải ID được khẳng định cho một tokenizer cụ thể.
 
 Điều cần nhớ là:
 
@@ -203,13 +146,9 @@ Nhưng mã token cũng chưa phải thứ các lớp của mô hình thực sự
 
 ## Vì sao việc chia token quan trọng?
 
-Giả sử cùng một câu được chia thành 10 token thay vì 14 token.
+Nếu cùng một đoạn văn được chia thành số token khác nhau, điều đó có thể ảnh hưởng tới độ dài chuỗi, lượng ngữ cảnh chiếm dụng, bộ nhớ, thời gian xử lý và cách các mảnh đầu vào được đưa vào mô hình.
 
-Điều đó có thể ảnh hưởng tới số bước mô hình phải xử lý, độ dài ngữ cảnh, lượng bộ nhớ cần dùng, thời gian xử lý và cách các mảnh văn bản tương tác với nhau.
-
-Vì vậy việc chia token không chỉ là “cắt câu cho đẹp”.
-
-Nó là một phần của cách văn bản bước vào thế giới số của mô hình.
+Vì vậy tokenization không chỉ là “cắt câu cho đẹp”. Nó là một phần của cách văn bản bước vào mô hình.
 
 ## Nhưng đừng suy diễn quá xa
 
@@ -219,9 +158,7 @@ Một lỗi khác cũng dễ mắc:
 
 Không.
 
-Ta mới chỉ biết **cách câu được chia thành đơn vị đầu vào**.
-
-Cách những đơn vị đó được biểu diễn và biến đổi về sau là một câu chuyện khác.
+Ta mới chỉ biết **cách câu được chia thành đơn vị đầu vào**. Cách những đơn vị đó được biểu diễn và biến đổi về sau là một câu chuyện khác.
 
 ~~~text
 cách chia token

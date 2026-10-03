@@ -34,6 +34,9 @@ Và xa hơn:
 
 Đó là câu hỏi của cuốn sách này.
 
+> **[FIGURE F01] — Bản đồ toàn cuốn sách**  
+> Hai hành trình song song: **token → trạng thái → thực thi** và **hiện tượng → phép đo → bằng chứng**.
+
 ## Trước hết, bốn khái niệm cần đủ để bắt đầu
 
 Bạn không cần biết trước AI hoạt động như thế nào.
@@ -71,8 +74,6 @@ Mô hình không xử lý cả câu như một khối nguyên vẹn.
 Văn bản được chia thành những mảnh nhỏ hơn gọi là **token**.
 
 Ngay Chương 1, ta sẽ sửa cách hiểu này cho chính xác hơn.
-
-Bốn ý trên là đủ để bắt đầu.
 
 Những khái niệm khác như khối số, CPU, GPU, bộ nhớ hay hệ thực thi sẽ chỉ xuất hiện khi câu chuyện thật sự cần tới chúng — và lúc đó chúng sẽ được giải thích tại chỗ.
 
@@ -144,44 +145,33 @@ Ta sẽ học chuyện đó kỹ hơn ở Chương 1.
 
 **Nhưng riêng trong hình dưới đây, để dễ nhìn, ta tạm coi mỗi từ là một token.**
 
+> **MINH HỌA — Illustration**
+>
 ~~~text
-┌──────────────────────────────────────────────────────────────────┐
-│ Ví dụ trực giác: một chuỗi token đi qua mô hình như thế nào?   │
-├──────────────────────────────────────────────────────────────────┤
-│ Câu đang có:                                                     │
-│                                                                  │
-│ "Hà Nội là thủ đô của ..."                                      │
-│                                                                  │
-│ Tạm coi mỗi từ là một token:                                    │
-│                                                                  │
-│ [Hà] [Nội] [là] [thủ] [đô] [của]                               │
-│   │    │     │    │     │     │                                  │
-│   └────┴─────┴────┴─────┴─────┘                                  │
-│                ↓                                                 │
-│      đi qua nhiều lớp xử lý                                     │
-│                ↓                                                 │
-│                                                                  │
-│ Lớp 1: trạng thái số của các vị trí bắt đầu thay đổi            │
-│ Lớp 2: các trạng thái tiếp tục chịu ảnh hưởng lẫn nhau          │
-│ ...                                                              │
-│ Lớp N: mô hình có một trạng thái mới cho toàn chuỗi hiện tại    │
-│                                                                  │
-│                ↓                                                 │
-│      chấm điểm token có thể đứng tiếp                            │
-│                ↓                                                 │
-│             [Việt]                                               │
-│                                                                  │
-│ Chuỗi trở thành:                                                 │
-│ [Hà] [Nội] [là] [thủ] [đô] [của] [Việt]                        │
-│                                                                  │
-│                ↓                                                 │
-│      chạy thêm một bước nữa                                     │
-│                ↓                                                 │
-│              [Nam]                                               │
-│                                                                  │
-│ Kết quả:                                                         │
-│ "Hà Nội là thủ đô của Việt Nam."                                │
-└──────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│ "Hà Nội là thủ đô của ..."                          │
+│                                                      │
+│ Tạm coi mỗi từ là một token:                        │
+│                                                      │
+│ [Hà] [Nội] [là] [thủ] [đô] [của]                  │
+│   │    │     │    │     │     │                     │
+│   └────┴─────┴────┴─────┴─────┘                     │
+│                    ↓                                 │
+│             nhiều lớp xử lý                         │
+│                    ↓                                 │
+│ lớp 1: trạng thái số bắt đầu thay đổi               │
+│ lớp 2: ngữ cảnh tiếp tục tác động                   │
+│  ...                                                 │
+│ lớp N: có trạng thái cuối cho chuỗi hiện tại        │
+│                    ↓                                 │
+│          chấm điểm token tiếp theo                  │
+│                    ↓                                 │
+│                  [Việt]                              │
+│                    ↓                                 │
+│          nối vào chuỗi và lặp lại                   │
+│                    ↓                                 │
+│                   [Nam]                              │
+└──────────────────────────────────────────────────────┘
 ~~~
 
 Có hai điều rất quan trọng trong hình này.
@@ -307,19 +297,11 @@ Ta còn nói về **khả năng quan sát của chính mình**.
 
 Và ở đó xuất hiện một nguyên tắc rất quan trọng:
 
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
 > **Điều ta đo được không tự động bằng điều đang tồn tại trong thực tế.**
-
-Một bộ đếm có thể trả về 0.
-
-Một khác biệt có thể rất nhỏ.
-
-Hai tín hiệu có thể gần như giống nhau.
-
-Một khuôn mẫu có thể trông rất thuyết phục.
-
-Nhưng mỗi lần như vậy, ta vẫn phải hỏi:
-
-> Phép đo này có đủ để nói điều mình đang muốn nói không?
+>
+> Một con số, một khác biệt hay một khuôn mẫu chỉ mạnh tới mức kênh đo và thiết kế bằng chứng cho phép. Ta luôn phải hỏi: *phép đo này có đủ để nói điều mình đang muốn nói không?*
 
 ## Các ví dụ thực tế đến từ đâu?
 
@@ -340,6 +322,8 @@ Ta chỉ giữ lại điều có giá trị khoa học rộng hơn:
 Nói ngắn gọn:
 
 > **Thí nghiệm là nguồn bằng chứng, không phải nhân vật chính của cuốn sách.**
+
+Trong Reader Edition, số liệu thực nghiệm sẽ được đánh dấu **KẾT QUẢ ĐO — Measured Result** và gắn Evidence Note để có thể truy ngược nguồn gốc.
 
 ## Cách đọc thuật ngữ trong sách
 

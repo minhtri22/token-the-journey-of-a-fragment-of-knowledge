@@ -70,33 +70,13 @@ tra bảng nhúng
 một dãy số
 ~~~
 
+> **[FIGURE F04] — Embedding lookup: token ID → hàng số đã học**
+
 Bây giờ các phép tính của mô hình đã có thứ để làm việc.
 
 ## Tại sao phải là nhiều số?
 
-Hãy thử biểu diễn một người bằng một con số duy nhất.
-
-Ví dụ:
-
-~~~text
-Tri = 27
-An  = 28
-Bình = 29
-~~~
-
-Ta chỉ biết ba người có ba mã khác nhau.
-
-Nhưng nếu muốn mô tả chiều cao, tuổi, cân nặng, năm kinh nghiệm hay số ngôn ngữ biết dùng, một con số đơn lẻ không đủ tiện.
-
-Ta có thể dùng một dãy:
-
-~~~text
-[45, 170, 65, 20, 2]
-~~~
-
-Dĩ nhiên token trong **mô hình ngôn ngữ lớn (Large Language Model, LLM)** không được biểu diễn bằng những thuộc tính có tên rõ ràng như ví dụ trên.
-
-Nhưng trực giác quan trọng là:
+Một mã số đơn lẻ chủ yếu giúp phân biệt danh tính. Một dãy nhiều số cho hệ thống một không gian phong phú hơn để học những quan hệ hữu ích.
 
 > **Nhiều chiều cho hệ thống một không gian phong phú hơn để mã hóa những quan hệ mà quá trình huấn luyện thấy hữu ích.**
 
@@ -104,29 +84,17 @@ Nhưng trực giác quan trọng là:
 
 Một dãy số như:
 
-~~~text
-[0,12, -0,44, 0,07, 1,03, ...]
-~~~
+> **MINH HỌA — Illustration**
+>
+> ~~~text
+> [0,12, -0,44, 0,07, 1,03, ...]
+> ~~~
 
 thường được gọi là một **vectơ (vector)**.
 
-Nếu từ “vectơ” làm bạn nhớ tới toán học ở trường, không sao.
-
-Trong chương này ta chỉ cần cách hiểu đơn giản:
+Ở mức cần thiết cho cuốn sách này:
 
 > **Vectơ là một dãy số có thứ tự.**
-
-Một vectơ hai chiều có thể là:
-
-~~~text
-[2, 5]
-~~~
-
-Một vectơ ba chiều có thể là:
-
-~~~text
-[2, 5, 9]
-~~~
 
 Biểu diễn của token trong mô hình thường có nhiều chiều hơn rất nhiều.
 
@@ -182,25 +150,11 @@ Nó là sản phẩm của quá trình học.
 
 ## Gần nhau về số có nghĩa gần nhau về ý nghĩa không?
 
-Có lúc ta sẽ thấy những biểu diễn có quan hệ thú vị.
+Có lúc các biểu diễn có quan hệ thú vị theo một số thước đo. Nhưng không nên biến quan sát “hai vectơ gần nhau” thành kết luận “mô hình hiểu hai khái niệm giống hệt con người”.
 
-Những token có cách sử dụng tương tự có thể tạo ra cấu trúc gần nhau theo một số thước đo.
-
-Nhưng phải rất thận trọng.
-
-Không nên biến một quan sát như:
-
-> hai vectơ gần nhau
-
-thành:
-
-> mô hình hiểu hai khái niệm này giống hệt con người.
-
-Khoảng cách số là một thuộc tính toán học của biểu diễn.
-
-Ý nghĩa là một diễn giải lớn hơn.
-
-Ta cần thêm bằng chứng trước khi nối hai thứ lại.
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> Khoảng cách số là thuộc tính của biểu diễn. Ý nghĩa là một diễn giải lớn hơn và cần thêm bằng chứng.
 
 Đây là một chủ đề sẽ quay lại nhiều lần trong sách:
 
@@ -266,41 +220,9 @@ Nó giống một bản ghi liên tục được cập nhật.
 
 ## Một ví dụ: hồ sơ được bổ sung dần
 
-Hãy tưởng tượng bạn có một tờ hồ sơ chỉ ghi:
+Hãy tưởng tượng một hồ sơ ban đầu chỉ có tên “An”. Khi ta lần lượt biết thêm “An đang ở sân bay”, “An vừa kiểm tra hộ chiếu”, “An đang ở cửa khởi hành”, tên không đổi nhưng trạng thái thông tin quanh “An” đã giàu hơn.
 
-~~~text
-Tên: An
-~~~
-
-Đây giống danh tính ban đầu.
-
-Sau đó bạn đọc thêm:
-
-~~~text
-An đang ở sân bay.
-~~~
-
-Hồ sơ có thêm ngữ cảnh.
-
-Rồi:
-
-~~~text
-An vừa kiểm tra hộ chiếu.
-~~~
-
-Bạn bắt đầu suy ra thêm điều có thể liên quan.
-
-Rồi:
-
-~~~text
-An đang đứng ở cửa khởi hành.
-~~~
-
-Trạng thái hiểu của bạn về “An” đã thay đổi dù tên “An” vẫn vậy.
-
-Biểu diễn trong mô hình không hoạt động giống hệt nhận thức con người.
-
-Nhưng phép so sánh này giúp ta nắm ý:
+Mô hình không hiểu theo đúng cách con người hiểu, nhưng phép so sánh giữ được trực giác:
 
 > **danh tính có thể giữ nguyên trong khi trạng thái biểu diễn được cập nhật theo ngữ cảnh.**
 

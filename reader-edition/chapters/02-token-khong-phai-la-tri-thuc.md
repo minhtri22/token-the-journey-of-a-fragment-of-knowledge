@@ -48,43 +48,21 @@ mã token
 8421
 ~~~
 
-Giả sử 8421 là mã của token đó.
-
-Bản thân con số 8421 không có nghĩa tự nhiên là “thủ đô nước Pháp”.
-
-Ta hoàn toàn có thể đánh số lại:
-
-~~~text
-Paris  → 100
-London → 101
-Hanoi  → 102
-~~~
-
-hoặc:
-
-~~~text
-Paris  → 9001
-London → 73
-Hanoi  → 4012
-~~~
-
-miễn hệ thống dùng cùng một bảng ánh xạ.
+> **MINH HỌA — Illustration**
+>
+> Giả sử 8421 là mã của token đó. Ta hoàn toàn có thể đánh số lại Paris, London hay Hanoi theo những số khác, miễn toàn hệ thống dùng cùng một bảng ánh xạ.
 
 Điều này cho ta một gợi ý:
 
 > **Mã token là danh tính, không phải toàn bộ nội dung tri thức của token.**
 
+> **[FIGURE F03] — Token ID là danh tính, không phải nội dung tri thức**
+
 ## Ví dụ: số áo cầu thủ
 
-Hãy tưởng tượng một cầu thủ mang áo số 10.
+Số áo giúp xác định cầu thủ nào đang được nói tới, nhưng tự nó không chứa chiều cao, kỹ năng, lịch sử thi đấu hay chiến thuật của người đó.
 
-Số 10 giúp ta xác định người nào đang được nói tới trong đội hình.
-
-Nhưng số 10 tự nó không chứa chiều cao cầu thủ, khả năng chuyền bóng, lịch sử thi đấu, chiến thuật của đội hay mối quan hệ với đồng đội.
-
-Nó chỉ là một **mã nhận diện**.
-
-Mã token cũng gần với ý tưởng đó.
+Mã token cũng gần với ý tưởng đó: **mã nhận diện trước, nội dung xử lý sau**.
 
 Nó cho hệ thống biết:
 
@@ -167,44 +145,18 @@ Nó là những trạng thái số liên tục được biến đổi.
 
 ## Nếu tri thức không nằm nguyên trong token, nó nằm ở đâu?
 
-Đây là một câu hỏi lớn.
+Ta chưa thể trả lời bằng một chương, nhưng có thể loại vài cách hiểu quá đơn giản.
 
-Ta chưa thể trả lời chỉ bằng một chương.
+Tri thức không thể chỉ là token ID, vì ID chủ yếu là mã nhận diện. Nó cũng khó có thể chỉ là một dãy số cố định duy nhất cho token, vì cùng token có thể được dùng trong nhiều ngữ cảnh. Và trạng thái còn tiếp tục thay đổi qua nhiều lớp.
 
-Nhưng ta có thể loại vài cách hiểu quá đơn giản.
-
-Tri thức không thể chỉ là:
-
-~~~text
-token ID
-~~~
-
-bởi token ID chỉ là mã nhận diện.
-
-Tri thức cũng khó có thể chỉ là:
-
-~~~text
-một dãy số cố định duy nhất cho token
-~~~
-
-bởi cùng token có thể được dùng trong nhiều ngữ cảnh khác nhau.
-
-Và tri thức cũng không chỉ nằm ở:
-
-~~~text
-một lớp đơn lẻ
-~~~
-
-bởi trạng thái còn tiếp tục được biến đổi qua nhiều lớp.
-
-Một cách hình dung thận trọng hơn là:
+Một cách hình dung thận trọng hơn:
 
 ~~~text
 những gì mô hình đã học
         +
 token hiện tại
         +
-những token xung quanh
+ngữ cảnh
         +
 cách các lớp biến đổi trạng thái
         ↓
@@ -241,30 +193,11 @@ Chỉ cần hiểu:
 
 ## Một cảnh báo quan trọng
 
-Khi thấy một dãy số đại diện cho token, ta rất dễ muốn gắn nhãn:
+Khi thấy một dãy số đại diện cho token, ta rất dễ muốn gắn nhãn từng chiều như “quốc gia”, “thành phố”, “cảm xúc”...
 
-~~~text
-chiều 1 = quốc gia
-chiều 2 = thành phố
-chiều 3 = cảm xúc
-...
-~~~
-
-Không nên vội.
-
-Trong mô hình thật, thông tin có thể được phân bố trên nhiều chiều và nhiều thành phần.
-
-Một khái niệm có thể không nằm gọn trong một con số duy nhất.
-
-Và cùng một chiều có thể tham gia vào nhiều thứ khác nhau.
-
-Đây là lý do ta phải thận trọng với câu:
-
-> “Tôi đã tìm thấy nơi mô hình lưu tri thức X.”
-
-Có thể ta mới chỉ tìm thấy một tín hiệu liên quan.
-
-Tìm thấy tín hiệu liên quan chưa đồng nghĩa tìm thấy nguyên nhân hay nơi lưu duy nhất.
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> Trong mô hình thật, thông tin có thể phân bố trên nhiều chiều và nhiều thành phần. Tìm thấy một tín hiệu liên quan **chưa đồng nghĩa** tìm thấy nguyên nhân hay “nơi lưu” duy nhất của một tri thức.
 
 ## Vậy token có hoàn toàn không có ý nghĩa?
 
