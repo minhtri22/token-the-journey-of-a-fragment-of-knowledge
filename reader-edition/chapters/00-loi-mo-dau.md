@@ -289,7 +289,7 @@ Bởi khi ta nói:
 
 hay:
 
-> “Bộ đếm phần cứng thay đổi như thế này.”
+> “Một số đo từ phần cứng thay đổi như thế này.”
 
 ta không chỉ nói về mô hình.
 
@@ -301,7 +301,7 @@ Và ở đó xuất hiện một nguyên tắc rất quan trọng:
 >
 > **Điều ta đo được không tự động bằng điều đang tồn tại trong thực tế.**
 >
-> Một con số, một khác biệt hay một khuôn mẫu chỉ mạnh tới mức kênh đo và thiết kế bằng chứng cho phép. Ta luôn phải hỏi: *phép đo này có đủ để nói điều mình đang muốn nói không?*
+> Một con số, một khác biệt hay một khuôn mẫu chỉ mạnh tới mức phép đo và thiết kế bằng chứng cho phép. Ta luôn phải hỏi: *phép đo này có đủ để nói điều mình đang muốn nói không?*
 
 ## Các ví dụ thực tế đến từ đâu?
 
@@ -327,21 +327,9 @@ Trong Reader Edition, số liệu thực nghiệm sẽ được đánh dấu **K
 
 ## Cách đọc thuật ngữ trong sách
 
-Khi có cách gọi tiếng Việt đủ rõ, sách dùng dạng:
+Khi một khái niệm chuyên ngành xuất hiện lần đầu, sách ưu tiên cách gọi **tiếng Việt (English)** nếu có cách dịch rõ ràng. Mục tiêu là để bạn hiểu câu bằng tiếng Việt trước, nhưng vẫn nhận ra đúng từ chuyên ngành khi gặp tài liệu khác.
 
-> **tiếng Việt (English)**
-
-Ví dụ:
-
-> **cách biểu diễn (representation)**
-
-> **trạng thái ẩn (hidden state)**
-
-> **chương trình GPU (kernel)**
-
-Mục tiêu là để bạn hiểu câu bằng tiếng Việt trước, nhưng vẫn nhận ra đúng từ chuyên ngành khi gặp tài liệu khác.
-
-Với những từ đã trở thành tên gọi phổ biến như **token**, sách sẽ giải thích thật rõ ý nghĩa rồi giữ nguyên từ đó.
+Với những từ đã trở thành tên gọi phổ biến như **token**, sách sẽ giải thích rõ ý nghĩa rồi giữ nguyên từ đó.
 
 ## Và ta bắt đầu ở đâu?
 

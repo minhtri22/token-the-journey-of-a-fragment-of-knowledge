@@ -98,13 +98,13 @@ Nhưng token trong hệ thống trước hết chỉ là **một đơn vị đư
 
 Mô hình chưa trực tiếp cầm cả “Paris, nước Pháp, tháp Eiffel, lịch sử, địa lý...” trong một chiếc hộp token.
 
-Ta cần phân biệt:
-
-~~~text
-mảnh văn bản
-≠
-toàn bộ ý nghĩa mà con người liên tưởng tới mảnh đó
-~~~
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> ~~~text
+> mảnh văn bản
+> ≠
+> toàn bộ ý nghĩa mà con người liên tưởng tới mảnh đó
+> ~~~
 
 Đây là bước đầu tiên để hiểu tên cuốn sách.
 
