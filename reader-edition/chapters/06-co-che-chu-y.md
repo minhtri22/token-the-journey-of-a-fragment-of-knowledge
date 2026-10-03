@@ -235,7 +235,7 @@ Không nên gắn nhãn cứng kiểu “đầu 1 = ngữ pháp, đầu 2 = đ�
 >
 > **Multi-Query Attention (MQA)** cho nhiều query heads dùng chung key/value. **Grouped-Query Attention (GQA)** chia query heads thành nhóm và dùng ít key/value heads hơn số query heads.
 >
-> Mục đích thực dụng quan trọng là giảm lượng key/value cần lưu và xử lý, đặc biệt với **KV cache** khi sinh văn bản.
+> Mục đích thực dụng quan trọng là giảm lượng key/value cần lưu và xử lý, đặc biệt với **bộ nhớ đệm khóa–giá trị (KV cache)** khi sinh văn bản.
 >
 > Cuốn sách không đi sâu vào GQA/MQA; mô hình Q/K/V cơ bản vẫn đủ để hiểu cơ chế chú ý ở mức của chương này.
 ## Attention có phải lời giải thích cho “mô hình đang nghĩ gì” không?

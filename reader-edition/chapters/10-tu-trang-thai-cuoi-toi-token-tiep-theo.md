@@ -248,7 +248,7 @@ Cho tới giờ ta nói về attention, FFN và LM head như những **hộp tro
 > SƠ ĐỒ MÔ HÌNH
 > attention → FFN → LM head
 >          ↓
->        runtime
+>    hệ thực thi
 >          ↓
 > CÔNG VIỆC THỰC THI TRÊN PHẦN CỨNG
 > ~~~

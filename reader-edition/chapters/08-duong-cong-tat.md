@@ -199,7 +199,9 @@ Vì vậy không nên nói:
 
 Câu đúng hơn là:
 
-> **Residual tạo một đường trực tiếp để trạng thái trước tham gia vào trạng thái sau, thay vì buộc mọi thông tin phải đi xuyên qua toàn bộ phép biến đổi.**
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> **Residual tạo một đường trực tiếp để trạng thái trước tham gia vào trạng thái sau, thay vì bảo đảm mọi thông tin cũ được giữ nguyên.**
 
 ## Một ví dụ đời thường khác
 
@@ -252,9 +254,9 @@ trọng số trong model
 trạng thái tạm thời của một lần chạy
 ~~~
 
-Trạng thái runtime phụ thuộc token, vị trí, toàn bộ ngữ cảnh, trạng thái lớp trước và trọng số hiện tại. Các cập nhật ở lớp sau lại phụ thuộc kết quả lớp trước, nên không thể coi chúng như những mảnh cố định có thể cộng lại tùy ý.
+Trạng thái được tạo ra **khi mô hình đang chạy** phụ thuộc token, vị trí, toàn bộ ngữ cảnh, trạng thái lớp trước và trọng số hiện tại. Các cập nhật ở lớp sau lại phụ thuộc kết quả lớp trước, nên không thể coi chúng như những mảnh cố định có thể cộng lại tùy ý.
 
-Có những kỹ thuật gần với ý tưởng “đi tắt”, chẳng hạn giữ lại trạng thái cần thiết của prefix để tránh tính lại phần đã xử lý. **KV cache** và một số dạng prefix/prompt cache thuộc tinh thần này.
+Có những kỹ thuật gần với ý tưởng “đi tắt”, chẳng hạn giữ lại trạng thái cần thiết của phần đầu vào đã xử lý để tránh tính lại. **Bộ nhớ đệm khóa–giá trị (KV cache)** và một số dạng bộ nhớ đệm phần đầu vào thuộc tinh thần này.
 
 Nhưng cần giữ ranh giới:
 
@@ -266,7 +268,7 @@ UPDATE MODEL
 → thay đổi thứ mô hình đã học
 ~~~
 
-Hai việc này khác nhau. Sidebar này chỉ mở trực giác; cuốn sách không đi sâu vào online learning, fast weights hay test-time adaptation.
+Hai việc này khác nhau. Sidebar này chỉ mở trực giác, không mở sang các cơ chế học hay thích nghi mô hình trong lúc chạy.
 ## Đây có phải nơi “mảnh tri thức” chạy qua?
 
 Dòng residual là nơi rất hữu ích để theo dõi sự thay đổi, nhưng không nên kết luận:
