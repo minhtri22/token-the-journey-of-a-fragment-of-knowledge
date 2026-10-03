@@ -36,11 +36,7 @@ biểu diễn ban đầu
 ↓
 ngữ cảnh
 ↓
-attention
-↓
-FFN
-↓
-residual
+attention / FFN / residual
 ↓
 nhiều lớp
 ↓
@@ -53,35 +49,15 @@ logits
 token tiếp theo
 ~~~
 
-Không có bước nào cho ta một chiếc hộp ghi:
-
-~~~text
-TRI THỨC
-~~~
-
-Thay vào đó, ta thấy một **quá trình biến đổi**.
-
+Không có bước nào cho ta một chiếc hộp ghi `TRI THỨC`. Thứ ta thấy là **một quá trình biến đổi trạng thái**.
 ## Token không phải tri thức
 
-Token là một đơn vị đầu vào.
-
-Mã token là danh tính.
-
-Biểu diễn ban đầu là một trạng thái số đã học.
-
-Ngữ cảnh làm trạng thái thay đổi.
-
-Nhiều lớp tiếp tục cập nhật nó.
-
-Trọng số của mô hình tham gia vào tất cả những phép biến đổi đó.
-
-Vì vậy:
+Token là đơn vị đầu vào. Token ID là danh tính. Biểu diễn ban đầu là trạng thái số đã học. Ngữ cảnh và nhiều lớp tiếp tục biến đổi trạng thái đó, dưới tác động của trọng số mô hình.
 
 > **Không có bằng chứng nào trong hành trình này cho phép ta coi một token đơn lẻ là một viên tri thức hoàn chỉnh.**
-
 ## Vectơ cũng không phải toàn bộ tri thức
 
-Ta cũng không nên đổi cực đoan:
+Ta cũng không nên thay một cực đoan bằng cực đoan khác:
 
 ~~~text
 token không chứa tri thức
@@ -89,25 +65,12 @@ token không chứa tri thức
 vậy một vectơ nào đó chắc chứa tri thức
 ~~~
 
-Một trạng thái ở một lớp chỉ là một lát cắt của quá trình.
+Một state ở một layer chỉ là một lát cắt của quá trình. Thông tin có thể phân tán trên nhiều chiều, phụ thuộc ngữ cảnh, được tạo qua nhiều layer và chỉ bộc lộ hành vi khi kết hợp với những phép biến đổi tiếp theo.
 
-Thông tin có thể:
-
-- phân tán trên nhiều chiều;
-- phụ thuộc ngữ cảnh;
-- được tạo bởi nhiều lớp;
-- cần trọng số ở lớp sau mới trở thành hành vi;
-- chỉ bộc lộ khi đầu vào phù hợp.
-
-Do đó câu:
-
-> “Tri thức nằm ở vectơ X.”
-
-thường cần nhiều bằng chứng hơn rất nhiều so với việc tìm một vectơ tương quan với một khái niệm.
-
+> **Tìm thấy một representation liên quan tới một khái niệm chưa đủ để nói tri thức “nằm trong” representation đó.**
 ## Một cách nói thận trọng hơn
 
-Ta có thể hình dung tri thức mà mô hình thể hiện được **phân bố** trên nhiều thành phần:
+Ta có thể mô tả ở mức kỹ thuật:
 
 ~~~text
 trọng số đã học
@@ -116,56 +79,34 @@ cấu trúc mô hình
       +
 ngữ cảnh hiện tại
       +
-các trạng thái trung gian
+trạng thái trung gian
       +
-chuỗi biến đổi qua nhiều lớp
+chuỗi biến đổi
       ↓
 hành vi dự đoán
 ~~~
 
-Sơ đồ này không phải định nghĩa triết học về tri thức.
-
-Nó chỉ là một cách nói kỹ thuật thận trọng hơn:
-
-> **Những gì mô hình có thể biểu hiện không nhất thiết nằm gọn ở một token, một neuron, một chiều hay một lớp duy nhất.**
-
+Sơ đồ này không phải định nghĩa triết học về tri thức. Nó chỉ giữ một ranh giới thực dụng: **những gì mô hình biểu hiện không nhất thiết nằm gọn ở một token, neuron, chiều hay layer duy nhất.**
 ## Đường thứ hai: bên ngoài mô hình
 
-Từ Chương 11, ta đổi góc nhìn.
-
-Ta thấy:
+Từ Chương 11, ta đổi góc nhìn:
 
 ~~~text
 phép tính logic
 ↓
-kernel
+kernel / dispatch
 ↓
-dispatch
+memory / execution
 ↓
-bộ nhớ
+trace / timestamp
 ↓
-thực thi vật lý
+counter
 ↓
-dấu vết
-↓
-dấu thời gian
-↓
-bộ đếm
-↓
-bằng chứng
+evidence
 ~~~
 
-Ở đây xuất hiện một loại “tri thức” khác.
-
-Không phải tri thức của mô hình.
-
-Mà là:
-
-> **tri thức của con người về mô hình.**
-
+Ở đây xuất hiện một loại hiểu biết khác: **tri thức của người quan sát về mô hình và hệ thực thi**.
 ## Tri thức của người quan sát không đến thẳng từ con số
-
-Ta có thể vẽ:
 
 ~~~text
 HIỆN TƯỢNG
@@ -174,77 +115,43 @@ KÊNH ĐO
     ↓
 SỐ LIỆU
     ↓
-KIỂM TRA ĐỘ ĐẦY ĐỦ
+MEASUREMENT ADEQUACY
     ↓
 BẰNG CHỨNG
     ↓
 DIỄN GIẢI
     ↓
-KẾT LUẬN
+KẾT LUẬN TRONG PHẠM VI
 ~~~
 
-Nếu kênh đo có vấn đề, con số có thể không đủ.
-
-Nếu bằng chứng chỉ định vị hotspot, ta không được viết nguyên nhân.
-
-Nếu counter trả 0 nhưng độ đầy đủ của phép đo không đạt, ta không được gọi đại lượng vật lý bằng 0.
-
-Nếu khuôn mẫu rất đẹp nhưng chưa có phép thử phân biệt phù hợp, ta không được viết kết luận nhân quả.
-
+Nếu kênh đo không đủ, con số không đủ. Nếu evidence chỉ localize hotspot, ta không được viết mechanism. Nếu `counter = 0` nhưng measurement adequacy FAIL, ta không được gọi physical quantity bằng 0. Nếu pattern đẹp nhưng chưa có discriminating test, ta không được viết causal conclusion.
 ## Hai hành trình gặp nhau
 
-Đây là điểm cuốn sách muốn đi tới.
+> **[FIGURE F24] — Final synthesis: model trajectory + observer trajectory**
+>
+> ~~~text
+> BÊN TRONG MÔ HÌNH          PHÍA NGƯỜI QUAN SÁT
+>
+> token                      hiện tượng
+>   ↓                           ↓
+> trạng thái                  phép đo
+>   ↓                           ↓
+> biến đổi                    bằng chứng
+>   ↓                           ↓
+> hành vi                     điều ta biết
+> ~~~
 
-Bên trong mô hình:
+Một bên là quá trình mô hình tạo và biến đổi trạng thái. Một bên là quá trình con người xây hiểu biết đáng tin về quá trình đó.
 
-~~~text
-token
-↓
-trạng thái
-↓
-biến đổi
-↓
-hành vi
-~~~
-
-Phía người quan sát:
-
-~~~text
-hiện tượng
-↓
-phép đo
-↓
-bằng chứng
-↓
-tri thức
-~~~
-
-Một bên là **quá trình mô hình tạo và biến đổi trạng thái**.
-
-Một bên là **quá trình con người tạo ra hiểu biết đáng tin về quá trình đó**.
-
-Tên “Đường đi của mảnh tri thức” vì vậy có hai nghĩa.
-
+Tên **Đường đi của mảnh tri thức** vì vậy có hai nghĩa — nhưng không nghĩa nào biến token thành một chiếc hộp chứa tri thức bất biến.
 ## Nghĩa thứ nhất: thông tin được biến đổi
 
-Một token không mang nguyên một mảnh tri thức bất biến.
+Token không mang nguyên một mảnh tri thức bất biến. Nó tham gia vào chuỗi biến đổi nơi danh tính token, vị trí, ngữ cảnh và trọng số đã học cùng ảnh hưởng tới trạng thái.
 
-Nhưng nó tham gia vào một chuỗi biến đổi nơi thông tin từ:
-
-- danh tính token;
-- vị trí;
-- ngữ cảnh;
-- trọng số đã học;
-
-được kết hợp và cập nhật.
-
-Ta theo dấu sự biến đổi đó.
-
+Cuốn sách theo dấu sự biến đổi đó.
 ## Nghĩa thứ hai: bằng chứng trở thành hiểu biết
 
 Một phép đo cũng không phải tri thức hoàn chỉnh.
-
-Nó đi qua:
 
 ~~~text
 quan sát
@@ -258,20 +165,10 @@ giới hạn
 diễn giải
 ~~~
 
-Chỉ khi giữ được nguồn gốc và ranh giới bằng chứng, ta mới có một kết luận đáng tin hơn.
-
+Chỉ khi nguồn gốc và ranh giới evidence được giữ rõ, kết luận mới đáng tin hơn.
 ## “Không biết” cũng là một trạng thái tri thức
 
-Đây có lẽ là bài học khó nhất.
-
-Ta thường thích hai đáp án:
-
-~~~text
-đúng
-sai
-~~~
-
-Nhưng khoa học thường có thêm:
+Khoa học không chỉ có `đúng` và `sai`. Nó còn có:
 
 ~~~text
 CHƯA ĐỦ BẰNG CHỨNG
@@ -279,10 +176,13 @@ CHƯA GIẢI QUYẾT
 NẰM NGOÀI PHẠM VI ĐÃ ĐO
 ~~~
 
-Những trạng thái này không phải thất bại ngôn ngữ.
+Những trạng thái này ngăn ta biến lỗ hổng hiểu biết thành một câu chuyện tròn trịa nhưng chưa được chứng minh.
 
-Chúng ngăn ta biến một lỗ hổng hiểu biết thành một câu chuyện bịa ra cho tròn.
+Part IV đã có một ví dụ thật:
 
+> **UNRESOLVED / no confirmed mechanism**
+
+Đó là nơi bằng chứng hiện tại dừng lại.
 ## Quay lại ví dụ đầu tiên
 
 Ta bắt đầu với:
@@ -291,51 +191,27 @@ Ta bắt đầu với:
 Hà Nội là thủ đô của ...
 ~~~
 
-Rồi mô hình sinh:
+rồi mô hình sinh `Việt`, sau đó `Nam`.
 
-~~~text
-Việt
-~~~
+Lúc đầu ta có thể tưởng token “Hà Nội” mang sẵn mẩu tri thức “thủ đô Việt Nam”. Sau hành trình này, cách hỏi thận trọng hơn là:
 
-sau đó:
+> Những trọng số đã học, ngữ cảnh và quỹ đạo biểu diễn đã tương tác thế nào để trạng thái cuối ưu tiên `Việt`, rồi `Nam`?
 
-~~~text
-Nam
-~~~
+Đó là câu hỏi khó hơn, nhưng phù hợp hơn với những gì ta đã quan sát.
+## Cuốn sách dừng ở đâu?
 
-Lúc đầu, ta có thể tưởng:
+Cuốn sách này dừng tại ranh giới mà bằng chứng hiện có cho phép.
 
-> token “Hà Nội” mang theo mẩu tri thức “thủ đô Việt Nam”.
+Ta đã học cách theo dấu representation, execution và measurement; học cách giữ `localization` tách khỏi `mechanism`; và học rằng một pattern mạnh vẫn có thể kết thúc ở `UNRESOLVED`.
 
-Bây giờ ta có cách hỏi tốt hơn:
+Những câu hỏi xa hơn có thể tồn tại, nhưng chúng **không được viết thành kết luận của cuốn sách này khi lineage chưa hội tụ**.
 
-> Những trọng số đã học, ngữ cảnh hiện tại và quỹ đạo biểu diễn đã tương tác thế nào để trạng thái cuối ưu tiên token “Việt”, rồi “Nam”?
-
-Đây là câu hỏi khó hơn.
-
-Nhưng cũng chính xác hơn.
-
-## Và nếu muốn đi sâu hơn nữa?
-
-Ta có thể tiếp tục hỏi:
-
-- biểu diễn thay đổi bao nhiêu qua từng lớp?
-- khác biệt nhỏ nào lặp lại?
-- phần nào của trạng thái có khả năng dự đoán một thuộc tính?
-- nếu can thiệp vào trạng thái, hành vi có đổi như dự đoán không?
-- kết quả có giữ qua nhiều đầu vào và mô hình khác nhau không?
-
-Những câu hỏi đó mở ra những con đường nghiên cứu mới.
-
-Nhưng cuốn sách này dừng trước khi biến chúng thành kết luận.
-
-Nó chỉ trao cho người đọc một kỷ luật:
+Điều cuốn sách giữ lại là một kỷ luật:
 
 > **Theo dấu trước. Đo trước. Phân biệt bằng chứng với diễn giải. Chỉ nói tới nơi dữ liệu cho phép.**
-
 ## Bản đồ cuối cùng
 
-Nếu phải nén cả cuốn sách thành một hình:
+F24 là bản đồ cuối:
 
 ~~~text
                  BÊN TRONG MÔ HÌNH
@@ -344,11 +220,11 @@ văn bản
   ↓
 token
   ↓
-biểu diễn
+representation
   ↓
-ngữ cảnh + trọng số
+context + weights
   ↓
-biến đổi qua nhiều lớp
+state transformations
   ↓
 token tiếp theo
 
@@ -357,38 +233,32 @@ token tiếp theo
 
 hiện tượng
   ↓
-dấu vết
+trace / measurement
   ↓
-phép đo
+measurement adequacy
   ↓
-kiểm tra độ đầy đủ
+evidence
   ↓
-bằng chứng
-  ↓
-diễn giải
+interpretation
   ↓
 điều ta thật sự biết
 ~~~
 
-Hai đường không giống nhau.
-
-Nhưng chúng gặp nhau ở một nguyên tắc:
+Hai đường gặp nhau ở một nguyên tắc:
 
 > **Đừng nhầm biểu diễn với bản chất. Đừng nhầm phép đo với thực tại.**
 
 ### Nhớ 3 điều
 
-1. **Token không phải một viên tri thức.** Điều mô hình biểu hiện được tạo ra từ sự tương tác giữa trọng số đã học, ngữ cảnh và chuỗi biến đổi trạng thái.
-2. **Một phép đo cũng không phải tri thức hoàn chỉnh.** Nó chỉ trở thành bằng chứng hữu ích khi nguồn gốc, độ đầy đủ và giới hạn diễn giải được giữ rõ.
-3. **CHƯA GIẢI QUYẾT cũng là một kết quả có giá trị.** Biết chính xác mình chưa biết gì tốt hơn một lời giải thích đẹp nhưng vượt quá bằng chứng.
+1. **Token không phải một viên tri thức.** Điều mô hình biểu hiện xuất hiện từ tương tác giữa trọng số đã học, ngữ cảnh và chuỗi biến đổi trạng thái.
+2. **Một phép đo cũng không phải tri thức hoàn chỉnh.** Nó chỉ trở thành evidence hữu ích khi provenance, adequacy và interpretation boundary được giữ rõ.
+3. **UNRESOLVED cũng là một kết quả có giá trị.** Biết chính xác mình chưa biết gì tốt hơn một lời giải thích đẹp nhưng vượt quá bằng chứng.
 
 ---
 
 Ta bắt đầu bằng cách đi theo một token để tìm “mảnh tri thức”.
 
-Cuối cùng, điều ta tìm thấy không phải một vật thể nằm yên trong token.
-
-Ta tìm thấy **một chuỗi biến đổi**.
+Cuối cùng, điều ta tìm thấy không phải một vật thể nằm yên trong token, mà là **một chuỗi biến đổi**.
 
 Và song song với nó là một chuỗi khác:
 

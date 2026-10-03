@@ -55,274 +55,158 @@ Trong hệ thống máy tính cũng vậy.
 
 ## Một khuôn mẫu thật rất thuyết phục
 
-Trong một bài đo cụ thể, khi so một nhóm LM-head Q6 với FFN-down Q6 ở một bài đo đầu vào ngắn, các quan sát định hướng gồm:
+> **KẾT QUẢ ĐO — Measured Result `[E-MECH-01]`**
+>
+> Trong phép đo mục tiêu, so sánh LM-head Q6 với FFN-down Q6 cho thấy:
+>
+> ~~~text
+> DRAM read amplification
+> LM head      4.268
+> FFN-down     1.436
+>
+> LSC hit ratio
+> LM head      0.103
+> FFN-down     0.738
+>
+> XVE SBID stall
+> LM head      81.78%
+> FFN-down     56.50%
+>
+> ALU1 utilization
+> LM head      ~1.58%
+> FFN-down     ~13.84%
+> ~~~
+
+Pattern này rất dễ dẫn tới câu chuyện:
 
 ~~~text
-Khuếch đại đọc DRAM
-LM head      4,268
-FFN-down     1,436
-
-Tỷ lệ trúng LSC
-LM head      0,103
-FFN-down     0,738
-
-XVE SBID stall
-LM head      81,78%
-FFN-down     56,50%
-
-Mức sử dụng ALU1
-LM head      ~1,58%
-FFN-down     ~13,84%
-~~~
-
-Chỉ nhìn bốn dòng này, một câu chuyện rất dễ viết:
-
-~~~text
-đọc DRAM nhiều
-+
-cache kém
-+
-stall cao
-+
-ALU thấp
+DRAM cao
++ cache hit thấp
++ stall cao
++ ALU utilization thấp
 ↓
-"nghẽn bộ nhớ"
+“memory bottleneck”
 ~~~
 
-Nhưng nghiên cứu không được phép dừng ở câu chuyện đẹp nhất.
-
+Nhưng nghiên cứu không được phép dừng ở câu chuyện hợp lý nhất.
 ## Vì sao khuôn mẫu đó chưa đủ?
 
-Bởi những bộ đếm cần thiết để phân biệt cơ chế không phải tất cả đều đáng tin.
+Vì các counter cần để phân biệt cơ chế không phải tất cả đều đáng tin trong measurement channel hiện tại.
 
-Trong cùng chương trình đo:
+Chương 17 đã thấy `GpuTime = 0` và các bất nhất cross-group ở `XVE_STALL` cùng `GPU_MEMORY_REQUEST_QUEUE_FULL`.
 
-- một số bộ đếm quan trọng không dùng được;
-- GpuTime trả 0;
-- XVE_STALL có nhóm đo trả 0 nhưng nhóm khác trả khác 0;
-- GPU_MEMORY_REQUEST_QUEUE_FULL cũng bất nhất giữa các nhóm.
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> Directional pattern mạnh **không vượt qua** một measurement-adequacy gate đã FAIL.
 
-Do đó, dù khuôn mẫu mô tả rất mạnh, **độ đầy đủ của kênh đo không đạt** cho câu hỏi xác nhận cơ chế.
-
-Kết luận chính thức phải là:
+Kết luận chính thức phải giữ nguyên:
 
 ~~~text
-hỗ trợ cơ chế chính thức: KHÔNG CÓ
-
-kết luận nhân quả: KHÔNG CÓ
-
-trạng thái:
-KHÔNG ĐẠT / CHƯA GIẢI QUYẾT
+MEASUREMENT ADEQUACY: FAIL
+MECHANISM: UNRESOLVED
+CONFIRMED MECHANISM: NONE
 ~~~
 
-Đây không phải thất bại của khoa học.
+> **UNRESOLVED / no confirmed mechanism**
 
-Đây chính là khoa học hoạt động đúng.
-
+Đây là verdict của bằng chứng hiện tại, không phải một khoảng trống được phép lấp bằng diễn giải thuận mắt.
 ## Bằng chứng định hướng
 
-Ta không cần vứt bỏ các con số.
+Các con số vẫn có giá trị như **bằng chứng định hướng (directional evidence)**.
 
-Chúng vẫn có thể được giữ như **bằng chứng định hướng (directional evidence)**.
-
-Nghĩa là:
-
-> Chúng chỉ ra một hướng đáng kiểm tra tiếp.
-
-Không phải:
-
-> Chúng đã chứng minh hướng đó đúng.
-
-Ta có thể vẽ:
+Nghĩa là: chúng chỉ ra một hướng đáng kiểm tra tiếp, không chứng minh hướng đó đúng.
 
 ~~~text
-khuôn mẫu
+pattern
    ↓
-giả thuyết hợp lý
+hypothesis
    ↓
-thiết kế phép thử phân biệt
+discriminating test
    ↓
-bằng chứng đủ mạnh
+adequate evidence
    ↓
-mới cân nhắc kết luận
+claim trong đúng phạm vi
 ~~~
-
-Nếu dừng ở bước đầu mà viết luôn bước cuối, ta đã nhảy qua phần khó nhất.
-
 ## “Vì sao” cần mạnh hơn “ở đâu”
 
-Chương 16 đã nói:
+Chương 16 trả lời:
 
 ~~~text
-định vị
-→ thời gian nằm ở đâu?
+localization → thời gian nằm ở đâu?
 ~~~
 
-Chương 19 hỏi:
+Chương này hỏi:
 
 ~~~text
-cơ chế
-→ vì sao lại tốn thời gian ở đó?
+mechanism → vì sao thời gian nằm ở đó?
 ~~~
 
-Câu hỏi thứ hai khó hơn.
-
-Để nói “vì sao”, ta thường cần một phép thử có khả năng phân biệt giữa các giải thích cạnh tranh.
-
-Ví dụ:
-
-~~~text
-Giả thuyết A:
-chậm vì đọc bộ nhớ
-
-Giả thuyết B:
-chậm vì hình học thực thi
-
-Giả thuyết C:
-chậm vì phụ thuộc tuần tự
-~~~
-
-Một phép đo tốt phải giúp ta loại hoặc hỗ trợ các giả thuyết này theo cách đã định trước.
-
+Muốn trả lời “vì sao”, phép thử phải có khả năng phân biệt các giải thích cạnh tranh, ví dụ memory traffic, execution geometry hay serial dependency.
 ## Can thiệp có kiểm soát
 
-Một cách mạnh để học về nguyên nhân là **can thiệp (intervention)**.
-
-Thay vì chỉ nhìn hệ thống đang chạy, ta thay đổi có kiểm soát một yếu tố.
-
-Ví dụ tưởng tượng:
+Một cách tăng sức mạnh bằng chứng là **can thiệp (intervention)**: thay đổi có kiểm soát một yếu tố rồi quan sát phản ứng so với đối chứng.
 
 ~~~text
-giữ dữ liệu giống nhau
-giữ thuật toán giống nhau
-chỉ đổi cách chia công việc
+giữ các yếu tố khác ổn định
+↓
+thay đổi một yếu tố mục tiêu
 ↓
 đo phản ứng
-~~~
-
-Nếu hiệu ứng thay đổi đúng như dự đoán, bằng chứng nhân quả mạnh hơn.
-
-Ta có thể vẽ:
-
-~~~text
-trạng thái ban đầu
-       ↓
-thay đổi đúng 1 yếu tố
-       ↓
-quan sát phản ứng
-       ↓
+↓
 so với đối chứng
-       ↓
-đánh giá giả thuyết
+↓
+đánh giá hypothesis
 ~~~
 
-Nhưng một can thiệp cũng phải giữ tính đúng và tránh thay đổi nhiều yếu tố cùng lúc.
-
+Nhưng intervention chỉ có giá trị khi nó giữ tính đúng, tránh thay nhiều yếu tố cùng lúc và có measurement channel đủ đáng tin.
 ## Can thiệp không phải phép màu
 
-Ngay cả khi đổi một kernel và thấy nhanh hơn, ta vẫn phải hỏi:
+Đổi một kernel rồi thấy nhanh hơn vẫn chưa đủ để khẳng định cơ chế nếu đầu ra thay đổi, nhiều yếu tố bị đổi cùng lúc, phép đo không ổn định hoặc kết quả không lặp lại.
 
-- đầu ra còn đúng không?
-- có thay nhiều thứ cùng lúc không?
-- phép đo có ổn định không?
-- lợi ích có đi lên toàn hệ không?
-- kết quả có lặp lại không?
-
-Nhân quả không đến từ từ “intervention”.
-
-Nó đến từ **thiết kế phép thử đủ phân biệt**.
-
+Nhân quả không đến từ chữ “intervention”. Nó đến từ **thiết kế phép thử đủ phân biệt**.
 ## Một sơ đồ kỷ luật bằng chứng
 
-Có thể tóm tắt cả phần cuối sách bằng:
+> **[FIGURE F23] — Evidence ladder: observation → pattern → hypothesis → adequacy → intervention → claim**
+>
+> ~~~text
+> OBSERVATION
+>    ↓
+> PATTERN
+>    ↓
+> HYPOTHESIS
+>    ↓
+> MEASUREMENT ADEQUACY?
+>    ├─ FAIL → UNRESOLVED
+>    │
+>    └─ PASS
+>        ↓
+> DISCRIMINATING TEST / INTERVENTION
+>        ↓
+> RESULT
+>        ↓
+> CLAIM WITHIN SCOPE
+> ~~~
 
-~~~text
-QUAN SÁT
-   ↓
-KHUÔN MẪU
-   ↓
-GIẢ THUYẾT
-   ↓
-PHÉP ĐO ĐỦ?
-   ├─ không → CHƯA GIẢI QUYẾT
-   │
-   └─ có
-       ↓
-PHÉP THỬ PHÂN BIỆT / CAN THIỆP
-       ↓
-KẾT QUẢ
-       ↓
-KẾT LUẬN TRONG ĐÚNG PHẠM VI
-~~~
-
-“CHƯA GIẢI QUYẾT” không phải ô trống.
-
-Nó là một trạng thái tri thức:
-
-> **Ta biết bằng chứng hiện tại chưa đủ.**
-
+`UNRESOLVED` không phải ô trống. Nó là trạng thái tri thức: **ta biết bằng chứng hiện tại chưa đủ**.
 ## Quay lại “mảnh tri thức”
 
-Điều thú vị là kỷ luật này không chỉ dành cho bộ đếm hiệu năng.
+Kỷ luật này cũng áp dụng khi ta nhìn representation trong mô hình.
 
-Nó cũng áp dụng khi ta nhìn biểu diễn trong mô hình.
-
-Giả sử ta thấy một hướng trong không gian trạng thái liên quan mạnh với:
-
-~~~text
-thủ đô
-~~~
-
-Ta chưa được phép nói ngay:
-
-> “Đây là chiều lưu tri thức thủ đô.”
-
-Ta có thể nói:
-
-> “Có một tín hiệu liên quan tới thuộc tính đang đo.”
-
-Muốn nói mạnh hơn, cần các phép thử mạnh hơn.
-
-Cùng một nguyên tắc chạy xuyên cả cuốn sách:
+Nếu một hướng trong state space liên quan mạnh với một thuộc tính, ta mới có một **tín hiệu liên quan**. Muốn gọi nó là nơi lưu, cơ chế hay nguyên nhân của hành vi, ta cần bằng chứng mạnh hơn.
 
 > **Tín hiệu không tự động trở thành cơ chế.**
-
 ## Còn câu hỏi cuối cùng
 
-Ta đã đi từ:
+Ta đã đi từ văn bản tới token, representation, nhiều lớp, execution, trace, counters và pattern.
 
-~~~text
-văn bản
-↓
-token
-↓
-biểu diễn
-↓
-nhiều lớp
-↓
-công việc vật lý
-↓
-dấu vết
-↓
-bộ đếm
-↓
-khuôn mẫu
-~~~
+Nhưng tên sách vẫn hỏi về **“mảnh tri thức”**.
 
-Nhưng tên sách là:
-
-> **Đường đi của mảnh tri thức**
-
-Vậy sau toàn bộ hành trình này, “tri thức” nằm ở đâu?
-
-Câu trả lời cần được viết cẩn thận hơn rất nhiều so với lúc bắt đầu.
-
-Đó là Chương 20.
+Vậy sau toàn bộ hành trình này, ta thật sự có quyền nói tới đâu? Chương 20 sẽ chỉ tổng kết những gì bằng chứng đã cho phép — không đi xa hơn.
 
 ### Nhớ 3 điều
 
-1. **Một khuôn mẫu định hướng mạnh vẫn chưa phải bằng chứng nhân quả.** Trong ví dụ thật, nhiều bộ đếm tách biệt rõ nhưng kết luận cơ chế vẫn là KHÔNG ĐẠT / CHƯA GIẢI QUYẾT vì kênh đo không đủ.
-2. **Bằng chứng định hướng giúp tạo giả thuyết; muốn nói “vì sao” cần phép thử có khả năng phân biệt các giải thích cạnh tranh, thường mạnh hơn khi có can thiệp có kiểm soát.**
-3. **CHƯA GIẢI QUYẾT là một kết quả khoa học có giá trị.** Nó nói rõ ranh giới của điều ta đang biết thay vì lấp chỗ trống bằng câu chuyện hợp lý nhất.
+1. **Một directional pattern mạnh vẫn chưa phải causal evidence.** `[E-MECH-01]` giữ verdict **UNRESOLVED / no confirmed mechanism**.
+2. **Muốn nói “vì sao”, cần phép thử đủ khả năng phân biệt các giải thích cạnh tranh và measurement channel đủ đáng tin.**
+3. **UNRESOLVED là kết quả khoa học hợp lệ.** Nó giữ ranh giới giữa điều đã quan sát và điều chưa được chứng minh.
 
 **Tiếp theo: [Chương 20 — Từ phép đo tới điều ta thật sự biết](20-tu-phep-do-toi-dieu-ta-biet.md)**
