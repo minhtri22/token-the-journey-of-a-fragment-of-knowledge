@@ -10,7 +10,7 @@ This namespace is isolated from the public Research Edition on `main`.
 - Part I — Lời mở đầu + Chương 1–4: **REVISED + QA PASS**.
 - Part II — Chương 5–10: **REVISED + QA PASS**.
 - Part III — Chương 11–16: **REVISED + QA PASS**.
-- Part IV — Chương 17–20: **OPEN, NOT YET REVISED**.
+- Part IV — Chương 17–20: **REVISED + QA PASS**.
 - Public Research Edition on `main`: unchanged.
 
 ## Frozen references
@@ -21,9 +21,10 @@ This namespace is isolated from the public Research Edition on `main`.
 
 Current next valid step:
 
-`TOKEN_VI_READER_EDITION_PART_IV_PROSE_REVISION`
+`TOKEN_VI_READER_EDITION_EVIDENCE_NOTES_AND_PROVENANCE_COMPLETION`
 
 QA records:
 - `qa/TOKEN_VI_READER_EDITION_PART_I_QA.md`
 - `qa/TOKEN_VI_READER_EDITION_PART_II_QA.md`
 - `qa/TOKEN_VI_READER_EDITION_PART_III_QA.md`
+- `qa/TOKEN_VI_READER_EDITION_PART_IV_QA.md`
