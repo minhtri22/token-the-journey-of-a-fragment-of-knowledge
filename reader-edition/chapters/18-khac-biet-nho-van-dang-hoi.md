@@ -103,7 +103,7 @@ Ta có thể hỏi:
 Một pattern có cấu trúc biến khác biệt nhỏ thành **câu hỏi khoa học đáng kiểm tra**, chưa biến nó thành kết luận.
 ## Một sơ đồ để nghĩ về “biến dạng”
 
-Ở Chương 9, ta đã có quỹ đạo biểu diễn:
+Ở Chương 9, ta đã có **quỹ đạo biểu diễn (representation trajectory)**:
 
 ~~~text
 x0 → x1 → x2 → ... → xN
