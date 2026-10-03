@@ -231,7 +231,7 @@ Không nên gắn nhãn cứng kiểu “đầu 1 = ngữ pháp, đầu 2 = đ�
 
 > **SIDEBAR — GQA và MQA**
 >
-> Mô hình nhiều đầu cơ bản thường được giải thích bằng các đầu Q/K/V. Nhưng không phải mọi LLM hiện đại đều có số query heads và key/value heads bằng nhau.
+> Cách tổ chức cơ bản với nhiều query/key/value heads thường được gọi là **Multi-Head Attention (MHA)**. Nhưng không phải mọi LLM hiện đại đều có số query heads và key/value heads bằng nhau.
 >
 > **Multi-Query Attention (MQA)** cho nhiều query heads dùng chung key/value. **Grouped-Query Attention (GQA)** chia query heads thành nhóm và dùng ít key/value heads hơn số query heads.
 >

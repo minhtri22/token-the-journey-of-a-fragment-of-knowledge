@@ -267,6 +267,4 @@ Cho tới giờ ta nói về attention, FFN và LM head như những **hộp tro
 
 ---
 
-# HẾT PHẦN II — ĐI XUYÊN TRANSFORMER
-
 **Tiếp theo: [Chương 11 — Một phép tính logic không phải một chương trình GPU](11-phep-tinh-logic-khong-phai-kernel.md)**

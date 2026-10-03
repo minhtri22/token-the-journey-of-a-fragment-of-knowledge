@@ -36,7 +36,7 @@ GPU cũng vậy.
 
 Một phép nhân ma trận cần trọng số, trạng thái đầu vào, nơi ghi kết quả và đôi khi thêm dữ liệu phụ.
 
-> **[FIGURE F16] — Compute + data movement trên đường đi của token**
+> **[FIGURE F16] — Tính toán + di chuyển dữ liệu trên đường đi của token**
 >
 > ~~~text
 > trọng số ───────┐
@@ -49,7 +49,7 @@ Một phép nhân ma trận cần trọng số, trạng thái đầu vào, nơi 
 Nếu dữ liệu chưa tới nơi cần thiết, đơn vị tính toán có thể phải chờ.
 ## Bộ nhớ không chỉ có một tầng
 
-Ở mức trực giác, dữ liệu có thể đi qua nhiều tầng lưu trữ:
+Cách tổ chức nhiều tầng lưu trữ như vậy thường được gọi là **phân cấp bộ nhớ (memory hierarchy)**. Ở mức trực giác, dữ liệu có thể đi qua:
 
 ~~~text
 ổ lưu trữ
@@ -85,7 +85,7 @@ dữ liệu trung gian
 phép tính B
 ~~~
 
-Nếu A và B tách biệt, dữ liệu có thể phải được ghi rồi đọc lại. Nếu execution path gộp tốt, một phần vòng đi-về này có thể giảm. Đây là cầu nối từ fusion sang memory.
+Nếu A và B tách biệt, dữ liệu có thể phải được ghi rồi đọc lại. Nếu đường thực thi gộp tốt, một phần vòng đi-về này có thể giảm. Đây là cầu nối từ gộp phép tính sang câu chuyện bộ nhớ.
 ## Bộ nhớ đệm là gì?
 
 **Bộ nhớ đệm (cache)** là vùng nhỏ hơn, nhanh hơn, cố gắng giữ dữ liệu có khả năng sớm được dùng lại.
@@ -119,28 +119,28 @@ memory-bound  → cung cấp / di chuyển dữ liệu là giới hạn chính
 
 > **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
 >
-> Không nên gắn các nhãn này cho một phép đo thật chỉ từ một counter hoặc một pattern đơn lẻ.
+> Không nên gắn các nhãn này cho một phép đo thật chỉ từ một chỉ số hoặc một khuôn mẫu đơn lẻ.
 ## Một khuôn mẫu rất hấp dẫn
 
 > **KẾT QUẢ ĐO — Measured Result `[E-MECH-01]`**
 >
-> Trong một phép đo phần cứng, một nhóm phép tính cho thấy pattern theo hướng:
+> Trong một phép đo phần cứng, một nhóm phép tính cho thấy khuôn mẫu theo hướng:
 >
 > - DRAM read amplification cao hơn nhóm so sánh;
 > - cache hit thấp hơn;
 > - mức chờ liên quan phụ thuộc dữ liệu cao hơn;
 > - mức sử dụng một số đơn vị tính toán thấp hơn.
 
-Pattern đó rất phù hợp với giả thuyết “vấn đề bộ nhớ”. Nhưng kết luận khoa học cuối cùng **không xác nhận cơ chế đó**, vì một số kênh đo quan trọng chưa đủ đáng tin để phân biệt cơ chế.
+Khuôn mẫu đó rất phù hợp với giả thuyết “vấn đề bộ nhớ”. Nhưng kết luận khoa học cuối cùng **không xác nhận cơ chế đó**, vì một số kênh đo quan trọng chưa đủ đáng tin để phân biệt cơ chế.
 
 > **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
 >
-> **Pattern phù hợp với giả thuyết bộ nhớ ≠ bằng chứng nhân quả rằng bộ nhớ là nguyên nhân.**
+> **Khuôn mẫu phù hợp với giả thuyết bộ nhớ ≠ bằng chứng nhân quả rằng bộ nhớ là nguyên nhân.**
 
-Chương 17 và 19 sẽ mở đầy đủ câu chuyện measurement adequacy này.
+Chương 17 và 19 sẽ mở đầy đủ câu chuyện về việc phép đo có đủ cho câu hỏi cơ chế hay không.
 ## Đường đi của token bây giờ có thêm một lớp
 
-Nửa đầu sách đi theo token → representation → attention/FFN → logits. Ở tầng vật lý, ta thêm:
+Nửa đầu sách đi theo token → biểu diễn → attention/FFN → logits. Ở tầng vật lý, ta thêm:
 
 ~~~text
 phép tính logic
@@ -167,9 +167,7 @@ Ta cần ghi lại:
 - nó thuộc phép tính logic nào;
 - có điểm đồng bộ nào giữa chúng.
 
-Một bản ghi như vậy được gọi là **dấu vết thực thi (execution trace)**.
-
-Đó là Chương 15.
+Chương 15 sẽ gọi loại bản ghi theo thời gian này là **dấu vết thực thi (execution trace)**.
 
 ### Nhớ 3 điều
 

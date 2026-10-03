@@ -52,7 +52,7 @@ Nếu có hai giá trị `A` và `B`, ta có thể tính **sai khác (difference
 Δ = B - A
 ~~~
 
-Nếu hai giá trị gần nhau, Δ sẽ nhỏ. Trong một số ngữ cảnh, phần còn lại sau khi trừ có thể được gọi là **phần dư (residual)**.
+Nếu hai giá trị gần nhau, Δ sẽ nhỏ. Trong một số ngữ cảnh, phần còn lại sau khi trừ có thể được gọi là **phần dư / khác biệt dư (residual difference)**.
 
 Đừng nhầm nó với **đường cộng tắt (residual connection)** ở Chương 8: một bên là kiến trúc mạng, một bên là phần chênh giữa hai đại lượng.
 ## Nhỏ so với cái gì?
@@ -70,14 +70,14 @@ Phép đo thực tế có thể chịu ảnh hưởng của nhiễu, làm tròn,
 
 Ta gọi vùng dao động nền thường gặp là **mức nhiễu (noise floor)**.
 
-> **[FIGURE F22] — Small difference → resolution → noise → repeatability → structure**
+> **[FIGURE F22] — Sai khác nhỏ → độ phân giải → nhiễu → lặp lại → cấu trúc**
 >
 > ~~~text
 > Δ quan sát được
 >      ↓
-> so với resolution?
+> so với độ phân giải?
 >      ↓
-> so với noise floor?
+> so với mức nhiễu?
 >      ↓
 > có lặp lại?
 >      ↓
@@ -100,7 +100,7 @@ Ta có thể hỏi:
 - có giữ cùng hướng qua nhiều lần chạy không?
 - khi đầu vào thay đổi nhẹ, sai khác có phản ứng theo quy luật không?
 
-Một pattern có cấu trúc biến khác biệt nhỏ thành **câu hỏi khoa học đáng kiểm tra**, chưa biến nó thành kết luận.
+Một khuôn mẫu có cấu trúc biến khác biệt nhỏ thành **câu hỏi khoa học đáng kiểm tra**, chưa biến nó thành kết luận.
 ## Một sơ đồ để nghĩ về “biến dạng”
 
 Ở Chương 9, ta đã có **quỹ đạo biểu diễn (representation trajectory)**:
@@ -137,11 +137,11 @@ hay:
 ~~~text
 có sai khác
     ↓
-so với resolution?
+so với độ phân giải?
     ↓
-so với noise floor?
+so với mức nhiễu?
     ↓
-có repeatability?
+có lặp lại?
     ↓
 có structure?
     ↓

@@ -58,6 +58,8 @@ Có một thành phần đứng trước mô hình làm việc đó.
 
 Ta gọi nó là **bộ tách và mã hóa văn bản (tokenizer)**.
 
+Tokenizer làm việc với một **từ vựng token (vocabulary)**: tập những đơn vị token và mã tương ứng mà hệ thống có thể sử dụng.
+
 > **[FIGURE F02] — Văn bản → tokenizer → token pieces → token IDs**
 
 Có thể hình dung:

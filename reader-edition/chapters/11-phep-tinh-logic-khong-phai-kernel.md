@@ -40,7 +40,7 @@ Phần cứng nhận những công việc cụ thể hơn.
 
 Khi mô tả mô hình, ta dùng những tên như attention, phép chiếu Q/K/V, FFN-up, FFN-down hay LM head.
 
-Đó là các **phép tính logic (logical/model-level operations)**: danh tính công việc theo vai trò của nó trong đồ thị mô hình.
+Đó là các **phép tính logic (logical/model-level operation)**: danh tính công việc theo vai trò của nó trong đồ thị mô hình.
 
 Ví dụ:
 
@@ -109,14 +109,14 @@ Sơ đồ logic và cách thi công thật không nhất thiết một-một.
 
 > **KẾT QUẢ ĐO — Measured Result `[E-TRACE-01]`**
 >
-> Trong một trace của **một bước sinh token** trên Intel Arc 140V:
+> Trong một phép đo của **một bước sinh token** trên Intel Arc 140V:
 >
 > ~~~text
 > 469 lần giao việc vật lý (dispatch)
 > 451 phép tính logic được đo
 > ~~~
 >
-> Cả 469 dispatch đều có timestamp và đều được quy chiếu về danh tính logic đã biết trong phạm vi trace.
+> Cả 469 dispatch đều có dấu thời gian và đều được quy chiếu về danh tính logic đã biết trong phạm vi phép đo.
 
 Vì:
 
@@ -124,11 +124,11 @@ Vì:
 469 ≠ 451
 ~~~
 
-trace này trực tiếp bác bỏ cách hình dung “mỗi phép tính logic luôn tương ứng đúng một dispatch”.
+phép đo này trực tiếp bác bỏ cách hình dung “mỗi phép tính logic luôn tương ứng đúng một dispatch”.
 
 > **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
 >
-> `469` và `451` chỉ mô tả trace, model/runtime và phần cứng đã đo. Chúng không phải hằng số chung cho mọi LLM.
+> `469` và `451` chỉ mô tả phép đo, mô hình/hệ thực thi và phần cứng đã đo. Chúng không phải hằng số chung cho mọi LLM.
 ## Tại sao cần giữ hai danh tính riêng?
 
 Nếu chỉ biết:

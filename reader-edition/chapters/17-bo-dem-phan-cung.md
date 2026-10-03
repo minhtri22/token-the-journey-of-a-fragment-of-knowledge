@@ -36,7 +36,7 @@ Tùy phần cứng và trình điều khiển, **bộ đếm phần cứng (hard
 Nhưng có hotspot rồi đọc counter chưa đủ để nói nguyên nhân. Trước hết phải biết con số được tạo ra qua kênh đo nào và kênh đó có đủ đáng tin cho câu hỏi đang hỏi hay không.
 ## Con số đi qua một kênh đo
 
-> **[FIGURE F20] — Measurement channel: physical event → number we see**
+> **[FIGURE F20] — Kênh đo: hiện tượng vật lý → con số ta nhìn thấy**
 >
 > ~~~text
 > hiện tượng vật lý
@@ -61,10 +61,10 @@ Counter không nhảy thẳng từ thực tại vật lý vào trang sách. Nế
 >
 > Hệ thống mục tiêu công bố **268 counters** và cần **12 measurement passes** để thu inventory đầy đủ.
 
-Không phải mọi counter đều có thể thu cùng lúc; instrumentation cũng có thể tạo overhead. Vì vậy nguyên tắc đúng không phải “đo mọi thứ”, mà là **chọn counter theo giả thuyết và kiểm tra measurement adequacy**.
+Không phải mọi counter đều có thể thu cùng lúc; việc chèn cơ chế đo đạc cũng có thể tạo overhead. Vì vậy nguyên tắc đúng không phải “đo mọi thứ”, mà là **chọn counter theo giả thuyết và kiểm tra xem phép đo có đủ cho câu hỏi đang hỏi hay không**.
 ## Đo có thể làm thay đổi hệ đang đo
 
-Instrumentation có thể tăng thời gian, thay lịch chạy, thêm lượt đo hoặc làm thay đổi trạng thái cache.
+**Cơ chế đo đạc (instrumentation)** có thể tăng thời gian, thay lịch chạy, thêm lượt đo hoặc làm thay đổi trạng thái cache.
 
 Vì vậy nên tách vai trò bằng chứng:
 
@@ -87,7 +87,7 @@ Hai loại run phục vụ câu hỏi khác nhau và không tự động thay th
 
 GPU rõ ràng đã thực thi công việc, nên không thể đọc con số đó như “GPU time vật lý bằng 0”.
 
-> **[FIGURE F21] — Counter-zero interpretation boundary**
+> **[FIGURE F21] — Ranh giới diễn giải khi counter bằng 0**
 >
 > ~~~text
 > counter = 0
@@ -116,7 +116,7 @@ GPU rõ ràng đã thực thi công việc, nên không thể đọc con số đ
 > stall-cause group  → 0
 > ~~~
 
-Những bất nhất cross-group như vậy làm suy yếu khả năng dùng các counter đó để xác nhận một cơ chế cụ thể.
+Những bất nhất giữa các nhóm như vậy làm suy yếu khả năng dùng các counter đó để xác nhận một cơ chế cụ thể.
 ## Độ đầy đủ của bằng chứng
 
 Ta gọi câu hỏi “phép đo này có đủ đáng tin và đủ phân biệt cho cơ chế đang kiểm tra không?” là **độ đầy đủ của phép đo (measurement adequacy)**.
@@ -124,7 +124,7 @@ Ta gọi câu hỏi “phép đo này có đủ đáng tin và đủ phân biệ
 Một counter có thể tồn tại, đọc được và trả số nhưng vẫn **không đủ** cho câu hỏi khoa học đang kiểm tra.
 ## FAIL của phép đo không phải FAIL của phần cứng
 
-Việc thu thập dữ liệu mục tiêu đã chạy đủ theo kế hoạch, nhưng counter channel không đạt mức cần thiết để xác nhận cơ chế.
+Việc thu thập dữ liệu mục tiêu đã chạy đủ theo kế hoạch, nhưng kênh đo counter không đạt mức cần thiết để xác nhận cơ chế.
 
 > **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
 >
@@ -140,16 +140,16 @@ Biết chính xác phép đo không cho phép nói gì cũng là một kết qu�
 
 Không. Các khác biệt về DRAM, cache, stall và utilization vẫn có thể dùng làm **bằng chứng định hướng** để tạo giả thuyết.
 
-Nhưng chúng không được phép vượt qua verdict của measurement adequacy:
+Nhưng chúng không được phép vượt qua kết luận về độ đầy đủ của phép đo:
 
 ~~~text
-pattern
+khuôn mẫu
 ↓
-hypothesis
+giả thuyết
 ↓
 KHÔNG tự động
 ↓
-causal conclusion
+kết luận nhân quả
 ~~~
 
 Chương 19 sẽ quay lại đúng ranh giới này.
@@ -178,7 +178,7 @@ Nhưng trước khi bỏ qua, cần hỏi:
 ### Nhớ 3 điều
 
 1. **Bộ đếm phần cứng (hardware counter) đi qua một kênh đo; con số cuối không phải sự thật vật lý trực tiếp không qua trung gian.**
-2. **Trong hệ thống được đo có 268 counter và cần 12 lượt để lấy toàn bộ inventory, nhưng một số counter quan trọng vẫn không đủ đáng tin cho câu hỏi nhân quả.**
+2. **Trong hệ thống được đo có 268 counter và cần 12 lượt để lấy toàn bộ danh mục counter, nhưng một số counter quan trọng vẫn không đủ đáng tin cho câu hỏi nhân quả.**
 3. **Counter bằng 0 không tự động nghĩa đại lượng vật lý bằng 0.** Khi kênh đo không đủ, kết luận đúng có thể là **CHƯA GIẢI QUYẾT**, không phải bịa một nguyên nhân.
 
 **Tiếp theo: [Chương 18 — Khi một khác biệt quá nhỏ vẫn đáng để hỏi](18-khac-biet-nho-van-dang-hoi.md)**

@@ -34,11 +34,11 @@ Trong hệ thống tính toán, các vùng như vậy được gọi là **đi�
 
 ## Từ 469 dispatch tới vài nhóm dễ hiểu hơn
 
-Đọc riêng 469 dispatch sẽ rất khó. Sau attribution, ta có thể cộng thời gian theo các họ phép tính logic.
+Đọc riêng 469 dispatch sẽ rất khó. Sau quy chiếu, ta có thể cộng thời gian theo các họ phép tính logic.
 
 > **KẾT QUẢ ĐO — Measured Result `[E-HOTSPOT-01]`**
 >
-> Trong trace mục tiêu, bốn họ lớn nhất chiếm:
+> Trong dấu vết mục tiêu, bốn họ lớn nhất chiếm:
 >
 > ~~~text
 > LM head   63.9109%
@@ -49,14 +49,14 @@ Trong hệ thống tính toán, các vùng như vậy được gọi là **đi�
 > top four  92.1715%
 > ~~~
 >
-> Các tỷ lệ là phần của **tổng measured dispatch time** trong trace đó.
+> Các tỷ lệ là phần của **tổng thời gian dispatch đã đo** trong dấu vết đó.
 
 > **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
 >
 > Đây không phải profile chung cho mọi model, runtime, phần cứng hay lần chạy.
 ## Nhìn bằng một biểu đồ
 
-> **[FIGURE F19] — Hotspot ranked distribution**
+> **[FIGURE F19] — Phân bố điểm nóng theo thứ hạng**
 >
 > ~~~text
 > LM head    |████████████████████████████████| ~63.9%
@@ -74,23 +74,23 @@ Việc trả lời **“thời gian nằm ở đâu?”** là một dạng **đ�
 ~~~text
 toàn bộ đường sinh token
         ↓
-đo + attribution
+đo + quy chiếu
         ↓
-nhóm theo operation family
+nhóm theo họ phép tính
         ↓
 xếp theo tỷ trọng
         ↓
-hotspot
+điểm nóng
 ~~~
 
-Localization giúp tránh tối ưu theo trực giác khi chưa biết phần nào thật sự chiếm thời gian.
+Định vị giúp tránh tối ưu theo trực giác khi chưa biết phần nào thật sự chiếm thời gian.
 ## Nhưng 63.9109% có nghĩa gì?
 
-Nó có nghĩa chính xác rằng: **trong trace mục tiêu, các dispatch được quy chiếu về LM head chiếm 63.9109% tổng measured dispatch time**.
+Nó có nghĩa chính xác rằng: **trong dấu vết mục tiêu, các dispatch được quy chiếu về LM head chiếm 63.9109% tổng thời gian dispatch đã đo**.
 
-Nó không tự động có nghĩa LM head luôn có tỷ lệ đó, không chứng minh LM head bị memory-bound, và cũng không nói rằng một thay đổi giả định sẽ giảm tổng latency đúng 63.9109%.
+Nó không tự động có nghĩa LM head luôn có tỷ lệ đó, không chứng minh LM head bị memory-bound, và cũng không nói rằng một thay đổi giả định sẽ giảm tổng độ trễ đúng 63.9109%.
 
-Con số là localization của một phép đo cụ thể.
+Con số là kết quả định vị của một phép đo cụ thể.
 ## Hotspot có phải nguyên nhân không?
 
 Không.
@@ -100,7 +100,7 @@ Một con đường thường xuyên tắc cho ta biết **nơi** vấn đề xu
 Tương tự:
 
 ~~~text
-LM head = 63.9109% measured dispatch time
+LM head = 63.9109% thời gian dispatch đã đo
 ~~~
 
 cho biết nơi thời gian tập trung, không nói cơ chế gây chi phí.
@@ -110,9 +110,9 @@ cho biết nơi thời gian tập trung, không nói cơ chế gây chi phí.
 > **localization ≠ mechanism**
 >
 > Hotspot là vị trí ưu tiên điều tra, không phải bằng chứng nhân quả.
-## Vì sao localization vẫn rất có giá trị?
+## Vì sao định vị vẫn rất có giá trị?
 
-Trước trace, ta có hàng trăm công việc và không biết nên nhìn đâu. Sau trace, bốn họ chiếm **92.1715%** measured dispatch time.
+Trước khi có dấu vết, ta có hàng trăm công việc và không biết nên nhìn đâu. Sau dấu vết, bốn họ chiếm **92.1715%** thời gian dispatch đã đo.
 
 Ta vẫn chưa có nguyên nhân, nhưng đã có một **bản đồ ưu tiên** để đặt câu hỏi tiếp theo.
 ## Amdahl xuất hiện ở đây
@@ -126,7 +126,7 @@ Ta không cần công thức ở đây. Quan trọng hơn: **tỷ trọng lớn 
 
 Sau khi một hotspot được tối ưu, phần khác có thể trở thành nút thắt mới.
 
-Vì vậy hotspot map có **thời hạn**. Sau thay đổi đáng kể, cần đo lại thay vì tiếp tục dùng bản đồ cũ như sự thật cố định.
+Vì vậy bản đồ điểm nóng có **thời hạn**. Sau thay đổi đáng kể, cần đo lại thay vì tiếp tục dùng bản đồ cũ như sự thật cố định.
 ## Từ “ở đâu” sang “vì sao”
 
 Bây giờ ta có một mục tiêu cụ thể:
@@ -155,7 +155,7 @@ Thậm chí chúng có thể trả về số 0.
 
 ### Nhớ 3 điều
 
-1. **Điểm nóng (hotspot) là nơi thời gian tập trung; trong trace cụ thể này, LM head ~63,91%, FFN-down ~16,27%, FFN-up ~6,01%, FFN-gate ~5,98%, tổng bốn họ ~92,17% dispatch time.**
+1. **Điểm nóng (hotspot) là nơi thời gian tập trung; trong trace cụ thể này, LM head ~63,91%, FFN-down ~16,27%, FFN-up ~6,01%, FFN-gate ~5,98%, tổng bốn họ ~92,17% thời gian dispatch.**
 2. **Định vị (localization) trả lời “ở đâu”, không trả lời “vì sao”.** Một hotspot lớn chưa phải bằng chứng về cơ chế gây chậm.
 3. **Bản đồ hotspot có thể trở nên lỗi thời sau khi hệ thống thay đổi; muốn tiếp tục tối ưu phải đo lại.**
 

@@ -38,11 +38,11 @@ ta có một **dòng thời gian**.
 
 Trong hệ thống tính toán, ý tưởng tương tự được gọi là **dấu vết thực thi (execution trace)**.
 
-## Một trace ghi lại điều gì?
+## Một dấu vết ghi lại điều gì?
 
-Tùy công cụ và mục đích, trace có thể chứa công việc đã gửi, thời điểm bắt đầu/kết thúc, thứ tự thực thi, điểm đồng bộ và danh tính logic mà công việc phục vụ.
+Tùy công cụ và mục đích, dấu vết có thể chứa công việc đã gửi, thời điểm bắt đầu/kết thúc, thứ tự thực thi, điểm đồng bộ và danh tính logic mà công việc phục vụ.
 
-> **[FIGURE F17] — Execution trace timeline**
+> **[FIGURE F17] — Dòng thời gian của dấu vết thực thi**
 >
 > ~~~text
 > thời gian ─────────────────────────────→
@@ -52,7 +52,7 @@ Tùy công cụ và mục đích, trace có thể chứa công việc đã gửi
 > dispatch C               [████████]
 > ~~~
 
-F17 là sơ đồ giải thích cấu trúc timeline, không phải trace đo thật.
+F17 là sơ đồ giải thích cấu trúc dòng thời gian, không phải dấu vết đo thật.
 ## Dấu thời gian
 
 Một **dấu thời gian (timestamp)** đánh dấu thời điểm trong quá trình thực thi. Ở dạng đơn giản:
@@ -66,16 +66,16 @@ thời lượng = t2 - t1
 Trên GPU, timestamp phải được hiểu theo cơ chế mà phần cứng và API cung cấp; không nên giả định mọi timestamp có cùng độ chính xác hay ý nghĩa.
 ## Đồng bộ là gì?
 
-Một công việc có thể phải đợi công việc khác trước khi tiếp tục. Các cơ chế kiểm soát thứ tự như vậy thuộc **đồng bộ (synchronization)**; trace có thể ghi những điểm như **hàng rào (barrier)**.
+Một công việc có thể phải đợi công việc khác trước khi tiếp tục. Các cơ chế kiểm soát thứ tự như vậy thuộc **đồng bộ (synchronization)**; dấu vết có thể ghi những điểm như **hàng rào (barrier)**.
 
 > **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
 >
-> Có barrier trong trace không có nghĩa toàn bộ khoảng thời gian giữa hai dispatch là “barrier cost”. Attribution về thời gian phải có bằng chứng riêng.
+> Có barrier trong trace không có nghĩa toàn bộ khoảng thời gian giữa hai dispatch là “barrier cost”. Quy chiếu thời gian phải có bằng chứng riêng.
 ## Một bước sinh token thật
 
 > **KẾT QUẢ ĐO — Measured Result `[E-TRACE-01]`**
 >
-> Trong trace của một bước sinh token trên Intel Arc 140V:
+> Trong dấu vết của một bước sinh token trên Intel Arc 140V:
 >
 > ~~~text
 > 469 dispatch vật lý
@@ -88,19 +88,19 @@ Một công việc có thể phải đợi công việc khác trước khi tiế
 > dispatch không quy chiếu được = 0
 > ~~~
 
-Trong phạm vi trace đó, không có dispatch mục tiêu nào rơi khỏi bản đồ logic.
+Trong phạm vi dấu vết đó, không có dispatch mục tiêu nào rơi khỏi bản đồ logic.
 
-> **[FIGURE F18] — Measured coverage + unattributed device time**
+> **[FIGURE F18] — Độ bao phủ phép đo + thời gian thiết bị chưa quy chiếu**
 ## Vì sao 469 lại quy về 451?
 
 Chương 12 đã cho câu trả lời: một phép tính logic có thể tương ứng nhiều dispatch.
 
 > **KẾT QUẢ ĐO — Measured Result `[E-DECOMP-01]`**
 >
-> LM head của trace mục tiêu ánh xạ từ **1 logical operation → 19 dispatches**.
+> LM head của dấu vết mục tiêu ánh xạ từ **1 phép tính logic → 19 dispatch**.
 
-Vì vậy số physical dispatch có thể lớn hơn số phép tính logic mà không tạo mâu thuẫn.
-## Trace có bao phủ hết thời gian không?
+Vì vậy số dispatch vật lý có thể lớn hơn số phép tính logic mà không tạo mâu thuẫn.
+## Dấu vết có bao phủ hết thời gian không?
 
 > **KẾT QUẢ ĐO — Measured Result `[E-TRACE-02]`**
 >
@@ -116,18 +116,18 @@ Phần chênh `963,700 ns` được gọi thận trọng là **thời gian thi�
 > **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
 >
 > Không được gọi toàn bộ `963,700 ns` là “barrier cost”. Khoảng chênh có thể chứa gap giữa dispatch, serialization, ảnh hưởng của timestamp hoặc chi phí khác chưa được phân loại.
-## Trace không phải lời giải thích
+## Dấu vết không phải lời giải thích
 
-Trace có thể trả lời rất tốt: công việc nào chạy trước/sau, kéo dài bao lâu và dispatch thuộc operation nào.
+Dấu vết có thể trả lời rất tốt: công việc nào chạy trước/sau, kéo dài bao lâu và dispatch thuộc operation nào.
 
-Nhưng nếu operation X mất nhiều thời gian, trace vẫn chưa tự trả lời **vì sao**.
+Nhưng nếu operation X mất nhiều thời gian, dấu vết vẫn chưa tự trả lời **vì sao**.
 
-Nguyên nhân có thể liên quan tới memory traffic, execution geometry, data dependency, parallelism, kernel design hoặc điều kiện khác.
+Nguyên nhân có thể liên quan tới lưu lượng bộ nhớ, hình học thực thi, phụ thuộc dữ liệu, mức song song, thiết kế kernel hoặc điều kiện khác.
 
 > **Dấu vết định vị “ở đâu”; cơ chế cần thêm bằng chứng để nói “vì sao”.**
 ## Quy chiếu là chiếc cầu quan trọng nhất
 
-Một timeline GPU thuần túy chỉ cho ta dispatch và timestamp. Người nghiên cứu mô hình cần biết chúng thuộc attention, FFN-down, LM head hay lớp nào.
+Một dòng thời gian GPU thuần túy chỉ cho ta dispatch và timestamp. Người nghiên cứu mô hình cần biết chúng thuộc attention, FFN-down, LM head hay lớp nào.
 
 ~~~text
 DẤU VẾT VẬT LÝ
@@ -136,7 +136,7 @@ dispatch + timestamp
 QUY CHIẾU
         ↓
 DANH TÍNH LOGIC
-operation + layer + role
+phép tính + lớp + vai trò
 ~~~
 
 Nhờ cầu nối này ta mới có thể cộng thời gian theo các họ phép tính có ý nghĩa đối với mô hình.
@@ -148,7 +148,7 @@ Khi nhóm các dispatch theo danh tính logic rồi cộng thời gian, ta có t
 
 Những vùng như vậy được gọi là **điểm nóng (hotspot)**.
 
-Ở trace này, kết quả không phân bố đều.
+Ở dấu vết này, kết quả không phân bố đều.
 
 Một vài họ phép tính chiếm phần lớn thời gian.
 
@@ -157,7 +157,7 @@ Một vài họ phép tính chiếm phần lớn thời gian.
 ### Nhớ 3 điều
 
 1. **Dấu vết thực thi (execution trace) ghi lại công việc vật lý theo thời gian và có thể quy chiếu chúng về phép tính logic.**
-2. **Trace 469 dispatch có 469 timestamp, 451 phép tính logic được đo và không có dispatch không quy chiếu trong phạm vi phép đo.**
-3. **Trace trả lời rất tốt câu “thời gian nằm ở đâu”, nhưng chưa tự trả lời “vì sao chậm”.** Ngay cả 0,078% thời gian chưa quy chiếu cũng không được tự tiện gọi là chi phí barrier.
+2. **Dấu vết 469 dispatch có 469 dấu thời gian, 451 phép tính logic được đo và không có dispatch không quy chiếu trong phạm vi phép đo.**
+3. **Dấu vết trả lời rất tốt câu “thời gian nằm ở đâu”, nhưng chưa tự trả lời “vì sao chậm”.** Ngay cả 0,078% thời gian chưa quy chiếu cũng không được tự tiện gọi là chi phí barrier.
 
 **Tiếp theo: [Chương 16 — Thời gian nằm ở đâu?](16-thoi-gian-nam-o-dau.md)**

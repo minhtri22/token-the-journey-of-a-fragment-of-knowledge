@@ -65,9 +65,9 @@ token không chứa tri thức
 vậy một vectơ nào đó chắc chứa tri thức
 ~~~
 
-Một state ở một layer chỉ là một lát cắt của quá trình. Thông tin có thể phân tán trên nhiều chiều, phụ thuộc ngữ cảnh, được tạo qua nhiều layer và chỉ bộc lộ hành vi khi kết hợp với những phép biến đổi tiếp theo.
+Một trạng thái ở một lớp chỉ là một lát cắt của quá trình. Thông tin có thể phân tán trên nhiều chiều, phụ thuộc ngữ cảnh, được tạo qua nhiều layer và chỉ bộc lộ hành vi khi kết hợp với những phép biến đổi tiếp theo.
 
-> **Tìm thấy một representation liên quan tới một khái niệm chưa đủ để nói tri thức “nằm trong” representation đó.**
+> **Tìm thấy một biểu diễn liên quan tới một khái niệm chưa đủ để nói tri thức “nằm trong” biểu diễn đó.**
 ## Một cách nói thận trọng hơn
 
 Ta có thể mô tả ở mức kỹ thuật:
@@ -96,13 +96,13 @@ phép tính logic
 ↓
 kernel / dispatch
 ↓
-memory / execution
+bộ nhớ / thực thi
 ↓
-trace / timestamp
+dấu vết / dấu thời gian
 ↓
 counter
 ↓
-evidence
+bằng chứng
 ~~~
 
 Ở đây xuất hiện một loại hiểu biết khác: **tri thức của người quan sát về mô hình và hệ thực thi**.
@@ -115,7 +115,7 @@ KÊNH ĐO
     ↓
 SỐ LIỆU
     ↓
-MEASUREMENT ADEQUACY
+ĐỘ ĐẦY ĐỦ PHÉP ĐO
     ↓
 BẰNG CHỨNG
     ↓
@@ -124,7 +124,7 @@ DIỄN GIẢI
 KẾT LUẬN TRONG PHẠM VI
 ~~~
 
-Nếu kênh đo không đủ, con số không đủ. Nếu evidence chỉ localize hotspot, ta không được viết mechanism. Nếu `counter = 0` nhưng measurement adequacy FAIL, ta không được gọi physical quantity bằng 0. Nếu pattern đẹp nhưng chưa có discriminating test, ta không được viết causal conclusion.
+Nếu kênh đo không đủ, con số không đủ. Nếu bằng chứng chỉ định vị điểm nóng, ta không được viết cơ chế. Nếu `counter = 0` nhưng độ đầy đủ phép đo FAIL, ta không được gọi đại lượng vật lý bằng 0. Nếu khuôn mẫu đẹp nhưng chưa có phép thử đủ phân biệt, ta không được viết kết luận nhân quả.
 ## Hai hành trình gặp nhau
 
 > **[FIGURE F24] — Final synthesis: model trajectory + observer trajectory**
@@ -165,7 +165,7 @@ giới hạn
 diễn giải
 ~~~
 
-Chỉ khi nguồn gốc và ranh giới evidence được giữ rõ, kết luận mới đáng tin hơn.
+Chỉ khi nguồn gốc và ranh giới của bằng chứng được giữ rõ, kết luận mới đáng tin hơn.
 ## “Không biết” cũng là một trạng thái tri thức
 
 Khoa học không chỉ có `đúng` và `sai`. Nó còn có:
@@ -202,9 +202,9 @@ Lúc đầu ta có thể tưởng token “Hà Nội” mang sẵn mẩu tri th�
 
 Cuốn sách này dừng tại ranh giới mà bằng chứng hiện có cho phép.
 
-Ta đã học cách theo dấu representation, execution và measurement; học cách giữ `localization` tách khỏi `mechanism`; và học rằng một pattern mạnh vẫn có thể kết thúc ở `UNRESOLVED`.
+Ta đã học cách theo dấu biểu diễn, thực thi và phép đo; học cách giữ **định vị** tách khỏi **cơ chế**; và học rằng một khuôn mẫu mạnh vẫn có thể kết thúc ở `UNRESOLVED`.
 
-Những câu hỏi xa hơn có thể tồn tại, nhưng chúng **không được viết thành kết luận của cuốn sách này khi lineage chưa hội tụ**.
+Những câu hỏi xa hơn có thể tồn tại, nhưng chúng **không được viết thành kết luận của cuốn sách này khi chuỗi bằng chứng chưa hội tụ**.
 
 Điều cuốn sách giữ lại là một kỷ luật:
 
@@ -220,11 +220,11 @@ văn bản
   ↓
 token
   ↓
-representation
+biểu diễn
   ↓
-context + weights
+ngữ cảnh + trọng số
   ↓
-state transformations
+biến đổi trạng thái
   ↓
 token tiếp theo
 
@@ -233,13 +233,13 @@ token tiếp theo
 
 hiện tượng
   ↓
-trace / measurement
+dấu vết / phép đo
   ↓
-measurement adequacy
+độ đầy đủ của phép đo
   ↓
-evidence
+bằng chứng
   ↓
-interpretation
+diễn giải
   ↓
 điều ta thật sự biết
 ~~~
@@ -251,7 +251,7 @@ Hai đường gặp nhau ở một nguyên tắc:
 ### Nhớ 3 điều
 
 1. **Token không phải một viên tri thức.** Điều mô hình biểu hiện xuất hiện từ tương tác giữa trọng số đã học, ngữ cảnh và chuỗi biến đổi trạng thái.
-2. **Một phép đo cũng không phải tri thức hoàn chỉnh.** Nó chỉ trở thành evidence hữu ích khi provenance, adequacy và interpretation boundary được giữ rõ.
+2. **Một phép đo cũng không phải tri thức hoàn chỉnh.** Nó chỉ trở thành bằng chứng hữu ích khi nguồn gốc, độ đầy đủ và ranh giới diễn giải được giữ rõ.
 3. **UNRESOLVED cũng là một kết quả có giá trị.** Biết chính xác mình chưa biết gì tốt hơn một lời giải thích đẹp nhưng vượt quá bằng chứng.
 
 ---

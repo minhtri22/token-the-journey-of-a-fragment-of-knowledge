@@ -42,7 +42,7 @@ GPU có nhiều đơn vị tính toán hoạt động song song. Để tận d�
 
 > **Hình học thực thi là cách một bài toán được chia thành các nhóm công việc để phần cứng xử lý.**
 
-> **[FIGURE F14] — Một logical operation → nhiều physical dispatches**
+> **[FIGURE F14] — Một phép tính logic → nhiều lần giao việc vật lý**
 >
 > ~~~text
 > PHÉP TÍNH LOGIC
@@ -59,15 +59,15 @@ Cách chia cụ thể phụ thuộc thuật toán, phần cứng, kích thước
 
 > **KẾT QUẢ ĐO — Measured Result `[E-DECOMP-01]`**
 >
-> Trong trace mục tiêu:
+> Trong phép đo mục tiêu:
 >
 > ~~~text
-> 1 LM-head logical operation
+> 1 phép tính logic của LM head
 > ↓
 > 19 dispatch vật lý
 > ~~~
 
-Đây là bằng chứng trực tiếp cho quan hệ **một logic → nhiều physical dispatches** trong hệ thống đã đo.
+Đây là bằng chứng trực tiếp cho quan hệ **một phép tính logic → nhiều dispatch vật lý** trong hệ thống đã đo.
 ## Có phải vì từ vựng bị chia thành 19 phần?
 
 Không nên tự suy ra như vậy chỉ từ con số 19.
@@ -76,7 +76,7 @@ Việc phân rã có thể phụ thuộc giới hạn kích thước công việ
 
 > **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
 >
-> Quan sát `1 logical operation → 19 dispatches` cho ta **cấu trúc ánh xạ đã đo**. Nó chưa tự giải thích **nguyên nhân thiết kế** tạo ra ánh xạ đó.
+> Quan sát `1 phép tính logic → 19 dispatch` cho ta **cấu trúc ánh xạ đã đo**. Nó chưa tự giải thích **nguyên nhân thiết kế** tạo ra ánh xạ đó.
 ## Chia nhỏ có phải lúc nào cũng xấu?
 
 Không. Nhiều dispatch hơn không tự động nghĩa chậm hơn.
@@ -115,7 +115,7 @@ Nếu một phép tính logic có nhiều dispatch, ta chỉ được cộng th�
 
 Trong hệ thống thật còn có thể có chồng lấn, khoảng trống và đồng bộ. Vì vậy tổng thời gian dispatch được quy chiếu **không tự động bằng** toàn bộ thời gian hệ thống xung quanh phép tính.
 
-Phép đo dùng trong sách khóa attribution theo trace, nên ta có thể nói thời gian dispatch được quy về operation nào; ta không gán mọi khoảng trống cho operation đó.
+Trong phép đo dùng ở đây, quy tắc quy chiếu đã được khóa, nên ta có thể nói thời gian dispatch được quy về phép tính logic nào; ta không gán mọi khoảng trống cho operation đó.
 ## Và chiều ngược lại?
 
 Ta vừa thấy:
