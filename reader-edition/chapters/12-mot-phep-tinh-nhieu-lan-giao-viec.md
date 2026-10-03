@@ -38,205 +38,84 @@ Cách thực thi lại được chia thành nhiều phần vật lý.
 
 ## GPU cũng cần chia công việc
 
-GPU có rất nhiều đơn vị tính toán hoạt động song song.
+GPU có nhiều đơn vị tính toán hoạt động song song. Để tận dụng chúng, một phép tính lớn thường được chia theo một **hình học thực thi (execution geometry)**.
 
-Để tận dụng chúng, một phép tính lớn thường được chia theo một **hình học thực thi (execution geometry)**.
+> **Hình học thực thi là cách một bài toán được chia thành các nhóm công việc để phần cứng xử lý.**
 
-Có thể hiểu đơn giản:
-
-> **Hình học thực thi là cách ta chia một bài toán lớn thành những nhóm công việc nhỏ hơn để phần cứng xử lý.**
-
-Ví dụ một ma trận lớn có thể được chia thành các khối:
-
-~~~text
-┌────┬────┬────┬────┐
-│ A1 │ A2 │ A3 │ A4 │
-├────┼────┼────┼────┤
-│ B1 │ B2 │ B3 │ B4 │
-├────┼────┼────┼────┤
-│ C1 │ C2 │ C3 │ C4 │
-└────┴────┴────┴────┘
-~~~
-
-Mỗi khối có thể trở thành một phần của công việc GPU.
+> **[FIGURE F14] — Một logical operation → nhiều physical dispatches**
+>
+> ~~~text
+> PHÉP TÍNH LOGIC
+>       ↓
+>  phân rã vật lý
+>   ↙   ↓   ↘
+> d1   d2   ... dN
+> ~~~
 
 Cách chia cụ thể phụ thuộc thuật toán, phần cứng, kích thước dữ liệu và cách hệ thực thi được viết.
-
 ## Lớp đầu ra là một ví dụ rất rõ
 
-Ở Chương 10, ta đã gặp **lớp tạo điểm đầu ra (LM head)**.
+Ở Chương 10, **LM head** tạo điểm cho toàn bộ từ vựng. Ở mức logic, đó là một công việc.
 
-Nó phải tạo điểm cho rất nhiều token trong từ vựng.
+> **KẾT QUẢ ĐO — Measured Result `[E-DECOMP-01]`**
+>
+> Trong trace mục tiêu:
+>
+> ~~~text
+> 1 LM-head logical operation
+> ↓
+> 19 dispatch vật lý
+> ~~~
 
-Về logic:
-
-~~~text
-trạng thái cuối
-↓
-LM head
-↓
-logits cho toàn bộ từ vựng
-~~~
-
-Trong một phép đo thật, LM head là:
-
-~~~text
-1 phép tính logic
-~~~
-
-nhưng được thực thi thành:
-
-~~~text
-19 lần giao việc vật lý
-~~~
-
-Ta có:
-
-~~~text
-LM head
-  │
-  ├→ dispatch 1
-  ├→ dispatch 2
-  ├→ dispatch 3
-  │     ...
-  └→ dispatch 19
-~~~
-
-Đây là bằng chứng trực tiếp cho một quan hệ một-nhiều.
-
+Đây là bằng chứng trực tiếp cho quan hệ **một logic → nhiều physical dispatches** trong hệ thống đã đo.
 ## Có phải vì từ vựng bị chia thành 19 phần?
 
-Không nên tự suy ra điều đó chỉ từ con số 19.
+Không nên tự suy ra như vậy chỉ từ con số 19.
 
-Có nhiều lý do một phép tính có thể được chia:
+Việc phân rã có thể phụ thuộc giới hạn kích thước công việc, cách chia hàng/cột, thuật toán, tổ chức bộ nhớ, kernel hoặc lựa chọn tối ưu cho phần cứng cụ thể.
 
-- giới hạn kích thước mỗi lần xử lý;
-- cách chia hàng hoặc cột;
-- cách thuật toán phân công công việc;
-- cách hệ thực thi tổ chức bộ nhớ;
-- giới hạn hoặc lựa chọn của kernel;
-- cách tối ưu cho phần cứng cụ thể.
-
-Nếu chỉ nhìn dấu vết và thấy:
-
-~~~text
-1 phép tính logic
-→
-19 dispatch
-~~~
-
-ta biết **quan hệ ánh xạ**.
-
-Ta chưa chắc đã biết **nguyên nhân thiết kế** tạo ra ánh xạ đó.
-
-Đây là một ví dụ rất quan trọng:
-
-> **Nhìn thấy cấu trúc thực thi chưa đồng nghĩa đã giải thích được vì sao cấu trúc đó tồn tại.**
-
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> Quan sát `1 logical operation → 19 dispatches` cho ta **cấu trúc ánh xạ đã đo**. Nó chưa tự giải thích **nguyên nhân thiết kế** tạo ra ánh xạ đó.
 ## Chia nhỏ có phải lúc nào cũng xấu?
 
-Không.
+Không. Nhiều dispatch hơn không tự động nghĩa chậm hơn.
 
-Nhiều dispatch hơn không tự động nghĩa chậm hơn.
+Chia nhỏ có thể giúp tăng song song, phù hợp giới hạn phần cứng hoặc xử lý dữ liệu lớn hơn. Nhưng chia quá nhỏ cũng có thể làm tăng chi phí gửi việc, đồng bộ và di chuyển dữ liệu.
 
-Chia nhỏ có thể giúp:
+Vì vậy:
 
-- tận dụng song song tốt hơn;
-- phù hợp giới hạn phần cứng;
-- giảm kích thước vùng làm việc;
-- cho phép xử lý dữ liệu lớn hơn;
-- tạo điều kiện tái sử dụng tài nguyên.
-
-Nhưng chia quá nhỏ cũng có thể tạo thêm chi phí:
-
-- nhiều lần gửi công việc;
-- nhiều điểm đồng bộ;
-- nhiều lần đọc / ghi dữ liệu;
-- nhiều khoảng trống giữa các công việc.
-
-Ta không thể kết luận chỉ từ số lượng dispatch.
-
+> **Số dispatch là một đặc điểm thực thi, không phải phán quyết hiệu năng.**
 ## Một ví dụ bằng vận chuyển
 
-Giả sử cần chuyển 10 tấn hàng.
+Giả sử cần chuyển 10 tấn hàng. Một xe lớn chạy một chuyến chưa chắc nhanh hơn nhiều xe nhỏ chạy song song.
 
-Phương án A:
+Chỉ nhìn số chuyến không đủ; còn phụ thuộc tải trọng, thời gian xếp hàng, khả năng chạy song song và chi phí chờ.
 
-~~~text
-1 xe rất lớn
-× 1 chuyến
-~~~
-
-Phương án B:
-
-~~~text
-5 xe nhỏ
-× 2 chuyến
-~~~
-
-Không thể nhìn:
-
-~~~text
-1 chuyến < 10 chuyến
-~~~
-
-rồi kết luận phương án A chắc chắn nhanh hơn.
-
-Còn phụ thuộc tải trọng, đường, thời gian xếp hàng, khả năng chạy song song và chi phí chờ.
-
-GPU cũng vậy.
-
-Số dispatch là một phần của bức tranh, không phải phán quyết.
-
+GPU cũng vậy: số dispatch chỉ có nghĩa khi đặt trong toàn bộ cấu trúc thực thi.
 ## Phân rã vật lý
 
-Ta có thể gọi việc biến một phép tính logic thành nhiều công việc thực thi là **phân rã vật lý (physical decomposition)**.
+Ta gọi việc biến một phép tính logic thành nhiều công việc thực thi là **phân rã vật lý (physical decomposition)**.
 
 ~~~text
 PHÉP TÍNH LOGIC
       │
-      │ một danh tính
       ↓
-┌────────────────────────┐
-│ phân rã để thực thi    │
-└────────────────────────┘
+phân rã để thực thi
       │
-      ├→ công việc 1
-      ├→ công việc 2
-      ├→ công việc 3
+      ├→ dispatch 1
+      ├→ dispatch 2
       └→ ...
 ~~~
 
-Điều này giúp ta hiểu vì sao cần giữ hai loại danh tính riêng.
-
-Nếu không, ta có thể nhìn 19 dispatch và tưởng có 19 phép tính logic khác nhau.
-
+Nếu không giữ riêng danh tính logic, ta có thể nhìn 19 dispatch và tưởng đó là 19 phép tính logic khác nhau.
 ## Khi cộng thời gian thì cộng thế nào?
 
-Giả sử một phép tính logic được chia thành ba dispatch:
+Nếu một phép tính logic có nhiều dispatch, ta chỉ được cộng thời gian khi quy tắc đo và quy chiếu đã xác định rõ dispatch nào thuộc về phép tính đó.
 
-~~~text
-dispatch A: 2 ms
-dispatch B: 3 ms
-dispatch C: 1 ms
-~~~
+Trong hệ thống thật còn có thể có chồng lấn, khoảng trống và đồng bộ. Vì vậy tổng thời gian dispatch được quy chiếu **không tự động bằng** toàn bộ thời gian hệ thống xung quanh phép tính.
 
-Nếu chúng chạy tuần tự và tất cả đều thuộc riêng phép tính đó, ta có thể nghĩ tới tổng:
-
-~~~text
-2 + 3 + 1 = 6 ms
-~~~
-
-Nhưng hệ thống thật có thể có chồng lấn, đồng bộ hoặc nhiều cách đo khác nhau.
-
-Vì vậy việc “cộng thời gian” cũng cần một quy tắc rõ.
-
-Trong phép đo dùng làm ví dụ ở cuốn sách này, các dispatch mục tiêu được gắn dấu thời gian và quy chiếu về phép tính logic theo một quy tắc đo đã khóa trước.
-
-Điều đó cho phép ta nói thời gian được **quy chiếu** về đâu.
-
-Nó vẫn không biến mọi khoảng trống hệ thống thành thời gian của riêng phép tính đó.
-
+Phép đo dùng trong sách khóa attribution theo trace, nên ta có thể nói thời gian dispatch được quy về operation nào; ta không gán mọi khoảng trống cho operation đó.
 ## Và chiều ngược lại?
 
 Ta vừa thấy:

@@ -38,21 +38,9 @@ Phần cứng nhận những công việc cụ thể hơn.
 
 ## Thế giới thứ nhất: phép tính logic
 
-Khi mô tả mô hình, ta dùng những tên như:
+Khi mô tả mô hình, ta dùng những tên như attention, phép chiếu Q/K/V, FFN-up, FFN-down hay LM head.
 
-- cơ chế chú ý;
-- phép chiếu Q/K/V;
-- FFN-up;
-- FFN-down;
-- lớp tạo điểm đầu ra.
-
-Đó là các **phép tính logic (semantic operations)**.
-
-Từ “semantic” ở đây không có nghĩa “ngữ nghĩa ngôn ngữ”.
-
-Nó chỉ nói rằng:
-
-> **đây là danh tính công việc theo ý nghĩa của đồ thị mô hình.**
+Đó là các **phép tính logic (logical/model-level operations)**: danh tính công việc theo vai trò của nó trong đồ thị mô hình.
 
 Ví dụ:
 
@@ -60,10 +48,7 @@ Ví dụ:
 FFN-down ở lớp 12
 ~~~
 
-là một công việc logic cụ thể.
-
-Ta biết nó đang đóng vai trò gì trong mô hình.
-
+cho ta biết công việc đó đang đóng vai trò gì trong mô hình, nhưng chưa nói phần cứng thực thi nó bằng bao nhiêu kernel hay dispatch.
 ## Thế giới thứ hai: công việc vật lý
 
 GPU cần một chương trình tính toán cụ thể.
@@ -74,6 +59,8 @@ Khi hệ thực thi gửi một lần công việc GPU đi chạy, ta gọi đó
 
 Ta có thể tạm hình dung:
 
+> **[FIGURE F13] — Hai tầng: model operation ↔ physical dispatch timeline**
+>
 ~~~text
 phép tính logic
       ↓
@@ -120,56 +107,47 @@ Sơ đồ logic và cách thi công thật không nhất thiết một-một.
 
 ## Một phép đo thật cho thấy điều đó
 
-Trong một lần theo dấu **một bước sinh token thật** trên GPU tích hợp Intel Arc 140V, hệ thống ghi được:
+> **KẾT QUẢ ĐO — Measured Result `[E-TRACE-01]`**
+>
+> Trong một trace của **một bước sinh token** trên Intel Arc 140V:
+>
+> ~~~text
+> 469 lần giao việc vật lý (dispatch)
+> 451 phép tính logic được đo
+> ~~~
+>
+> Cả 469 dispatch đều có timestamp và đều được quy chiếu về danh tính logic đã biết trong phạm vi trace.
 
-~~~text
-469 lần giao việc vật lý
-451 phép tính logic được đo
-~~~
-
-Tất cả 469 lần giao việc đều có dấu thời gian.
-
-Không có lần giao việc nào bị bỏ lại mà không quy chiếu được về công việc logic đã biết trong phạm vi phép đo đó.
-
-Nhưng:
+Vì:
 
 ~~~text
 469 ≠ 451
 ~~~
 
-Chỉ riêng sự khác nhau này đã đủ để bác bỏ cách hình dung:
+trace này trực tiếp bác bỏ cách hình dung “mỗi phép tính logic luôn tương ứng đúng một dispatch”.
 
-> “Mỗi hộp logic luôn tương ứng đúng một công việc GPU.”
-
-Tuy nhiên ta cũng phải giữ ranh giới:
-
-> **469 và 451 là kết quả của một mô hình, một hệ thực thi, một phần cứng và một lần đo cụ thể.**
-
-Đó không phải con số chung cho mọi LLM.
-
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> `469` và `451` chỉ mô tả trace, model/runtime và phần cứng đã đo. Chúng không phải hằng số chung cho mọi LLM.
 ## Tại sao cần giữ hai danh tính riêng?
 
-Giả sử ta chỉ lưu thông tin vật lý:
+Nếu chỉ biết:
 
 ~~~text
 dispatch 127 mất 3 ms
 ~~~
 
-Ta biết có một công việc chậm.
+ta biết có một công việc vật lý chậm nhưng chưa biết nó thuộc phần nào của mô hình.
 
-Nhưng chưa biết nó thuộc phần nào của mô hình.
-
-Ngược lại, nếu chỉ lưu:
+Ngược lại, nếu chỉ biết:
 
 ~~~text
 FFN-down lớp 12
 ~~~
 
-ta biết ý nghĩa logic.
+ta biết vai trò logic nhưng chưa biết phần cứng đã chia và chạy nó thế nào.
 
-Nhưng chưa biết phần cứng đã chia và chạy nó thế nào.
-
-Vì vậy khi muốn quan sát sâu, ta cần một cầu nối:
+Vì vậy cần một cầu nối:
 
 ~~~text
 danh tính logic
@@ -179,70 +157,31 @@ quy chiếu
 công việc vật lý
 ~~~
 
-**Quy chiếu (attribution)** là việc gắn một quan sát vật lý trở lại công việc logic mà nó phục vụ.
-
+**Quy chiếu (attribution)** là việc gắn một quan sát vật lý trở lại phép tính logic mà nó phục vụ.
 ## Một sơ đồ có hai tầng
 
-Ta có thể vẽ cùng một bước sinh token theo hai cách:
+F13 đặt hai cách nhìn cạnh nhau:
 
 ~~~text
-TẦNG LOGIC
+TẦNG LOGIC                  TẦNG VẬT LÝ
 
-Attention
-   ↓
-FFN-up
-   ↓
-FFN-gate
-   ↓
-FFN-down
-   ↓
-LM head
+Attention                   dispatch 1
+FFN-up                      dispatch 2
+FFN-gate                    dispatch 3
+FFN-down                    ...
+LM head                     dispatch 469
+       \                    /
+        \---- attribution --/
 ~~~
-
-và:
-
-~~~text
-TẦNG VẬT LÝ
-
-dispatch 1
-dispatch 2
-dispatch 3
-...
-dispatch 469
-~~~
-
-Giữa hai tầng là một bản ánh xạ.
 
 Không có ánh xạ đó, ta chỉ có hai danh sách rời nhau.
-
 ## “Chương trình GPU” và “lần giao việc” có giống nhau không?
 
-Không hoàn toàn.
+Không.
 
-**Chương trình GPU (kernel)** là phần mã tính toán.
+**Chương trình GPU (kernel)** là phần mã tính toán. **Lần giao việc (dispatch)** là một lần cụ thể kernel được gửi đi với cấu hình công việc cụ thể.
 
-**Lần giao việc (dispatch)** là một lần cụ thể mà chương trình đó được gửi đi với một cấu hình công việc cụ thể.
-
-Cùng một kernel có thể được dispatch nhiều lần.
-
-Ví dụ:
-
-~~~text
-kernel A
-  ↓
-dispatch cho khối dữ liệu 1
-
-kernel A
-  ↓
-dispatch cho khối dữ liệu 2
-
-kernel A
-  ↓
-dispatch cho khối dữ liệu 3
-~~~
-
-Vì vậy khi đếm “bao nhiêu lần GPU nhận việc”, ta đang đếm dispatch, không nhất thiết đếm số kernel khác nhau.
-
+Cùng một kernel có thể được dispatch nhiều lần. Vì vậy đếm “bao nhiêu lần GPU nhận việc” là đếm dispatch, không nhất thiết là đếm bao nhiêu kernel khác nhau.
 ## Tại sao điều này quan trọng khi đi theo token?
 
 Ở nửa đầu sách, ta nói:
@@ -277,26 +216,22 @@ Ta phải biết các phép tính logic đã trở thành công việc vật lý
 
 ## Và một phép tính có thể bị chia nhỏ
 
-Trong phép đo vừa nhắc, một phép tính logic đặc biệt ở cuối mô hình không chạy bằng một dispatch duy nhất.
+Trong chính trace vừa nhắc, LM head ở cuối mô hình không chạy bằng một dispatch duy nhất.
 
-Nó được thực thi bằng **19 lần giao việc vật lý**.
+> **KẾT QUẢ ĐO — Measured Result `[E-DECOMP-01]`**
+>
+> ~~~text
+> 1 LM-head logical operation
+> ↓
+> 19 dispatch vật lý
+> ~~~
 
-Đây là ví dụ rất rõ cho quan hệ:
-
-~~~text
-1 phép tính logic
-↓
-nhiều công việc vật lý
-~~~
-
-Tại sao hệ thực thi lại chia như vậy?
-
-Đó là câu hỏi của Chương 12.
+Đây là ví dụ trực tiếp cho quan hệ một-nhiều. Vì sao hệ thực thi chia như vậy là câu hỏi của Chương 12.
 
 ### Nhớ 3 điều
 
-1. **Phép tính logic (semantic operation) mô tả công việc theo ý nghĩa của mô hình; chương trình GPU (kernel) và lần giao việc (dispatch) mô tả cách công việc thật sự được đưa xuống phần cứng.**
-2. **Hai tầng không bắt buộc ánh xạ một-một.** Trong một bước sinh token được đo, 451 phép tính logic tương ứng với 469 lần giao việc vật lý.
-3. **Muốn biết thời gian của phần cứng thuộc về phần nào trong mô hình, ta cần quy chiếu (attribution) giữa danh tính logic và công việc vật lý.**
+1. **Phép tính logic mô tả công việc ở mức mô hình; kernel và dispatch mô tả cách công việc được thực thi trên GPU.**
+2. **Hai tầng không bắt buộc ánh xạ một-một.** Trace mục tiêu có 451 phép tính logic và 469 dispatch.
+3. **Muốn biết thời gian vật lý thuộc phần nào của mô hình, ta cần quy chiếu (attribution).**
 
 **Tiếp theo: [Chương 12 — Một phép tính có thể trở thành nhiều lần giao việc cho phần cứng](12-mot-phep-tinh-nhieu-lan-giao-viec.md)**

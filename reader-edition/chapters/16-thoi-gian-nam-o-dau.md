@@ -34,198 +34,99 @@ Trong hệ thống tính toán, các vùng như vậy được gọi là **đi�
 
 ## Từ 469 dispatch tới vài nhóm dễ hiểu hơn
 
-Trace ở Chương 15 có 469 dispatch.
+Đọc riêng 469 dispatch sẽ rất khó. Sau attribution, ta có thể cộng thời gian theo các họ phép tính logic.
 
-Đọc từng dispatch riêng lẻ sẽ rất khó.
+> **KẾT QUẢ ĐO — Measured Result `[E-HOTSPOT-01]`**
+>
+> Trong trace mục tiêu, bốn họ lớn nhất chiếm:
+>
+> ~~~text
+> LM head   63.9109%
+> FFN-down  16.2659%
+> FFN-up     6.0136%
+> FFN-gate   5.9812%
+> ----------------
+> top four  92.1715%
+> ~~~
+>
+> Các tỷ lệ là phần của **tổng measured dispatch time** trong trace đó.
 
-Nhưng khi quy chiếu chúng về các họ phép tính logic, ta có thể cộng lại.
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> Đây không phải profile chung cho mọi model, runtime, phần cứng hay lần chạy.
+## Nhìn bằng một biểu đồ
 
-Trong phép đo đó, bốn họ lớn nhất là:
+> **[FIGURE F19] — Hotspot ranked distribution**
+>
+> ~~~text
+> LM head    |████████████████████████████████| ~63.9%
+> FFN-down   |████████                        | ~16.3%
+> FFN-up     |███                             | ~ 6.0%
+> FFN-gate   |███                             | ~ 6.0%
+> khác       |████                            | ~ 7.8%
+> ~~~
 
-~~~text
-LM head   63,9109%
-FFN-down  16,2659%
-FFN-up     6,0136%
-FFN-gate   5,9812%
-~~~
-
-Tổng cộng:
-
-~~~text
-92,1715%
-~~~
-
-Các tỷ lệ trên là tỷ lệ trong **tổng thời gian dispatch đã đo** của trace đó.
-
-Không phải tuyên bố về mọi lần chạy hay mọi mô hình.
-
-## Nhìn bằng một biểu đồ ASCII
-
-Ta có thể làm tròn để nhìn trực giác:
-
-~~~text
-LM head    |████████████████████████████████| ~63,9%
-FFN-down   |████████                        | ~16,3%
-FFN-up     |███                             | ~ 6,0%
-FFN-gate   |███                             | ~ 6,0%
-khác       |████                            | ~ 7,8%
-~~~
-
-Bức tranh rất rõ:
-
-> **Thời gian không phân bố đều.**
-
-Một nhóm rất nhỏ các họ phép tính chiếm phần lớn tổng thời gian dispatch.
-
+Hình có thể làm tròn để nhìn nhanh; Evidence Note giữ exact values.
 ## Đây gọi là định vị chi phí
 
-Việc tìm:
-
-> thời gian đang nằm ở đâu?
-
-có thể gọi là **định vị chi phí (localization)**.
-
-Ta có thể viết:
+Việc trả lời **“thời gian nằm ở đâu?”** là một dạng **định vị chi phí (localization)**.
 
 ~~~text
 toàn bộ đường sinh token
         ↓
-đo thời gian
+đo + attribution
         ↓
-nhóm theo operation
+nhóm theo operation family
         ↓
 xếp theo tỷ trọng
         ↓
 hotspot
 ~~~
 
-Đây là một thành tựu quan trọng.
+Localization giúp tránh tối ưu theo trực giác khi chưa biết phần nào thật sự chiếm thời gian.
+## Nhưng 63.9109% có nghĩa gì?
 
-Nếu không biết hotspot ở đâu, ta dễ tối ưu nhầm.
+Nó có nghĩa chính xác rằng: **trong trace mục tiêu, các dispatch được quy chiếu về LM head chiếm 63.9109% tổng measured dispatch time**.
 
-## Nhưng 63,9% có nghĩa gì?
+Nó không tự động có nghĩa LM head luôn có tỷ lệ đó, không chứng minh LM head bị memory-bound, và cũng không nói rằng một thay đổi giả định sẽ giảm tổng latency đúng 63.9109%.
 
-Nó có nghĩa:
-
-> Trong trace cụ thể này, các dispatch được quy chiếu về LM head chiếm khoảng 63,9% tổng dispatch time.
-
-Nó **không** tự động có nghĩa:
-
-> LM head luôn chiếm 63,9% trên mọi máy.
-
-Nó cũng không có nghĩa:
-
-> LM head chậm vì bộ nhớ.
-
-Và không có nghĩa:
-
-> Nếu xóa LM head thì hệ thống nhanh hơn đúng 63,9%.
-
-Con số mô tả một phép đo cụ thể.
-
+Con số là localization của một phép đo cụ thể.
 ## Hotspot có phải nguyên nhân không?
 
 Không.
 
-Đây là điểm trung tâm của chương.
-
-Giả sử bạn thấy:
-
-~~~text
-đường X thường xuyên tắc xe
-~~~
-
-Bạn đã **định vị** được nơi có vấn đề.
-
-Nhưng nguyên nhân có thể là:
-
-- đèn giao thông;
-- công trường;
-- đường hẹp;
-- tai nạn;
-- giờ cao điểm;
-- nhiều xe rẽ trái.
-
-Biết “tắc ở đường X” chưa cho biết “vì sao đường X tắc”.
+Một con đường thường xuyên tắc cho ta biết **nơi** vấn đề xuất hiện; nguyên nhân có thể là đèn giao thông, công trường, đường hẹp hay lưu lượng.
 
 Tương tự:
 
 ~~~text
-LM head = 63,9%
+LM head = 63.9109% measured dispatch time
 ~~~
 
-cho biết nơi thời gian tập trung.
+cho biết nơi thời gian tập trung, không nói cơ chế gây chi phí.
 
-Nó chưa nói cơ chế gây chi phí.
-
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> **localization ≠ mechanism**
+>
+> Hotspot là vị trí ưu tiên điều tra, không phải bằng chứng nhân quả.
 ## Vì sao localization vẫn rất có giá trị?
 
-Bởi nó thu hẹp không gian tìm kiếm.
+Trước trace, ta có hàng trăm công việc và không biết nên nhìn đâu. Sau trace, bốn họ chiếm **92.1715%** measured dispatch time.
 
-Trước trace:
-
-~~~text
-hàng trăm công việc
-↓
-không biết nên nhìn đâu
-~~~
-
-Sau trace:
-
-~~~text
-một vài họ chiếm ~92,17%
-↓
-có thể ưu tiên điều tra
-~~~
-
-Đó là khác biệt rất lớn.
-
-Ta không có nguyên nhân.
-
-Nhưng ta có một **bản đồ ưu tiên**.
-
+Ta vẫn chưa có nguyên nhân, nhưng đã có một **bản đồ ưu tiên** để đặt câu hỏi tiếp theo.
 ## Amdahl xuất hiện ở đây
 
-Có một trực giác rất hữu ích.
+Nếu một phần chỉ chiếm tỷ trọng rất nhỏ, tối ưu riêng phần đó chỉ có dư địa giới hạn để cải thiện toàn hệ.
 
-Nếu một phần chỉ chiếm 1% tổng thời gian, dù tối ưu nó vô hạn, tổng hệ thống cũng chỉ cải thiện rất ít.
+Ngược lại, hotspot lớn có dư địa ảnh hưởng lớn hơn. Đây là trực giác của **định luật Amdahl (Amdahl's law)**.
 
-Ngược lại, nếu một phần chiếm phần lớn thời gian, nó có nhiều **dư địa ảnh hưởng** tới toàn hệ hơn.
-
-Ý tưởng này liên quan tới **định luật Amdahl (Amdahl's law)**.
-
-Ta không cần công thức đầy đủ ở đây.
-
-Chỉ cần nhớ:
-
-> **Tối ưu một phần chỉ có thể giúp toàn hệ trong phạm vi tỷ trọng thời gian mà phần đó thực sự chiếm.**
-
-Nhưng ngay cả hotspot lớn cũng không bảo đảm tối ưu được dễ dàng.
-
+Ta không cần công thức ở đây. Quan trọng hơn: **tỷ trọng lớn không đồng nghĩa phần đó dễ tối ưu hoặc đã biết cơ chế.**
 ## Điểm nóng có thể thay đổi
 
-Giả sử ta tối ưu LM head rất mạnh.
+Sau khi một hotspot được tối ưu, phần khác có thể trở thành nút thắt mới.
 
-Bức tranh sau tối ưu có thể trở thành:
-
-~~~text
-trước:
-LM head   64%
-FFN-down  16%
-khác      20%
-
-sau:
-LM head   25%
-FFN-down  35%
-khác      40%
-~~~
-
-Nút thắt cũ đã thay đổi.
-
-Vì vậy một hotspot map có **thời hạn**.
-
-Sau thay đổi lớn, phải đo lại.
-
+Vì vậy hotspot map có **thời hạn**. Sau thay đổi đáng kể, cần đo lại thay vì tiếp tục dùng bản đồ cũ như sự thật cố định.
 ## Từ “ở đâu” sang “vì sao”
 
 Bây giờ ta có một mục tiêu cụ thể:

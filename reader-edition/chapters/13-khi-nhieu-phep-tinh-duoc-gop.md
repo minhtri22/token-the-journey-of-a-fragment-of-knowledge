@@ -26,222 +26,76 @@ Một hệ thực thi không bắt buộc giữ nguyên ranh giới của sơ đ
 
 ## Ví dụ đời thường: rửa và cắt rau
 
-Trên danh sách công việc:
+Trên danh sách công việc, “rửa rau” và “cắt rau” là hai bước logic. Nhưng một dây chuyền có thể tổ chức chúng sát nhau hoặc trong cùng một đường xử lý vật lý.
 
-~~~text
-1. rửa rau
-2. để ráo
-3. cắt rau
-~~~
-
-Đó là ba bước logic.
-
-Nhưng trong một quy trình khác, một máy có thể vừa rửa vừa chuyển rau qua bộ phận cắt trong cùng dây chuyền.
-
-Ta vẫn có thể nói về hai công việc:
-
-~~~text
-rửa
-cắt
-~~~
-
-nhưng ranh giới vật lý giữa chúng không còn giống hai máy độc lập.
-
-GPU cũng có ý tưởng tương tự.
-
+Ý quan trọng không nằm ở ví dụ nhà bếp, mà ở chỗ: **ranh giới logic không bắt buộc trùng ranh giới thực thi**.
 ## Gộp phép tính là gì?
 
 **Gộp phép tính (fusion)** là việc kết hợp nhiều phép tính logic vào một đường thực thi vật lý chung.
 
-Ví dụ tưởng tượng:
+> **[FIGURE F15] — Nhiều logical operations → một physical execution**
+>
+> ~~~text
+> operation A ─┐
+>              ├→ fused kernel / dispatch
+> operation B ─┘
+> ~~~
 
-~~~text
-phép tính A
-phép tính B
-      │
-      └──── gộp ────→ một kernel
-                         ↓
-                    một dispatch
-~~~
-
-Lợi ích tiềm năng có thể là:
-
-- giảm số lần giao việc;
-- tránh ghi dữ liệu trung gian ra bộ nhớ rồi đọc lại;
-- giữ dữ liệu gần đơn vị tính toán hơn;
-- giảm một số chi phí đồng bộ.
-
-Nhưng “có thể” không có nghĩa “luôn luôn”.
-
+Fusion có thể giảm dispatch, giảm ghi/đọc dữ liệu trung gian hoặc giảm một số điểm đồng bộ. Nhưng nó không tự động làm hệ thống nhanh hơn.
 ## Vì sao fusion có thể giúp?
 
-Giả sử hai phép tính nối tiếp:
+Nếu hai phép tính nối tiếp phải ghi kết quả trung gian ra bộ nhớ rồi đọc lại, chi phí di chuyển dữ liệu có thể đáng kể.
 
-~~~text
-A
-↓
-ghi kết quả ra bộ nhớ
-↓
-B đọc lại
-↓
-B
-~~~
+Fusion có thể giữ một phần dữ liệu trung gian gần nơi tính toán hơn. Tuy nhiên kernel hợp nhất cũng có thể dùng nhiều thanh ghi hơn, giảm song song hoặc gặp giới hạn khác.
 
-Nếu gộp được:
-
-~~~text
-A
-↓
-kết quả trung gian vẫn ở gần phép tính
-↓
-B
-~~~
-
-ta có thể giảm một phần di chuyển dữ liệu.
-
-Đây là trực giác.
-
-Hiệu quả thật còn phụ thuộc:
-
-- kích thước công việc;
-- số thanh ghi cần dùng;
-- bộ nhớ dùng chung;
-- độ song song;
-- giới hạn kernel;
-- phần cứng.
-
-Fusion cũng có thể làm kernel phức tạp hơn và giảm hiệu quả ở chỗ khác.
-
+> **Fusion là một lựa chọn thực thi có trade-off, không phải tối ưu mặc định.**
 ## Một dispatch có thể phục vụ nhiều danh tính logic
 
-Nếu fusion xảy ra, hệ quan sát gặp một bài toán mới.
+Nếu một dispatch thực hiện cả A và B, attribution trở nên khó hơn: thời gian vật lý đó thuộc A, B hay cả hai?
 
-Ta có:
+Không thể nhân đôi toàn bộ thời gian cho A và B; cũng không thể chia 50/50 nếu không có cơ sở.
 
-~~~text
-dispatch 42
-↓
-thực hiện
-A + B
-~~~
+Đây là lý do hệ quan sát phải tách **danh tính logic** khỏi **đơn vị thực thi vật lý**.
+## Trace thực nghiệm dùng trong sách có thấy fusion không?
 
-Vậy thời gian của dispatch 42 thuộc về:
+> **KẾT QUẢ ĐO — Measured Result `[E-TRACE-01]`**
+>
+> Trong trace 469 dispatch được dùng ở Part III, số trường hợp **nhiều phép tính logic cùng chia sẻ một dispatch** được ghi nhận là:
+>
+> ~~~text
+> 0
+> ~~~
 
-~~~text
-A?
-B?
-hay cả hai?
-~~~
-
-Không thể cứ nhân đôi toàn bộ thời gian cho cả A và B, vì như vậy tổng thời gian logic sẽ lớn hơn thời gian vật lý thật.
-
-Cũng không thể tùy tiện chia 50/50 nếu không có cơ sở.
-
-Đây là lý do **quy chiếu thời gian** trở nên khó hơn khi nhiều phép tính chia sẻ một công việc vật lý.
-
-## Trace thực nghiệm dùng sau này có thấy fusion không?
-
-Trong trace 469 dispatch mà ta sẽ dùng ở Chương 15–16, số **phép tính logic chia sẻ cùng một dispatch** được ghi nhận là:
-
-~~~text
-0
-~~~
-
-Điều đó có nghĩa:
-
-> **Trace cụ thể đó không cung cấp ví dụ trực tiếp cho trường hợp nhiều phép tính logic chia sẻ một dispatch.**
-
-Đây là một ranh giới quan trọng.
-
-Ta dạy fusion vì nó là một khả năng thực thi có thật và cần được mô hình quan sát tính tới.
-
-Nhưng ta không lấy trace đó rồi nói:
-
-> “Trace đã chứng minh fusion.”
-
-Nó không chứng minh điều đó.
-
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> Trace đó **không cung cấp ví dụ trực tiếp cho fusion**. Con số 0 không chứng minh fusion không tồn tại ở hệ thống khác, phiên bản khác hay execution path khác.
 ## Vậy tại sao vẫn cần chương này?
 
-Bởi nếu ta xây một cách suy nghĩ chỉ đúng khi:
+Một cách quan sát chỉ đúng với `1 logic = 1 dispatch` sẽ vỡ khi runtime thay đổi.
+
+Ta cần chấp nhận ít nhất ba quan hệ:
 
 ~~~text
-1 phép tính = 1 dispatch
+1 logic → 1 physical
+1 logic → nhiều physical
+nhiều logic → 1 physical
 ~~~
 
-thì nó sẽ vỡ ngay khi hệ thực thi thay đổi.
-
-Một mô hình quan sát tốt phải chấp nhận cả ba khả năng:
-
-~~~text
-1 logic → 1 vật lý
-
-1 logic → nhiều vật lý
-
-nhiều logic → 1 vật lý
-~~~
-
-Thậm chí hệ thống phức tạp còn có thể có quan hệ nhiều-nhiều.
-
+và trong hệ thống phức tạp còn có thể xuất hiện quan hệ nhiều-nhiều.
 ## Danh tính logic phải tồn tại độc lập với cách chạy
 
-Giả sử hôm nay FFN-gate và FFN-up chạy riêng:
+Hôm nay FFN-gate và FFN-up có thể chạy riêng; ngày mai hệ thực thi có thể gộp chúng.
 
-~~~text
-gate → dispatch A
-up   → dispatch B
-~~~
+Nếu danh tính khoa học phụ thuộc vào “dispatch số mấy”, ta mất khả năng so sánh giữa hai phiên bản.
 
-Ngày mai hệ thực thi gộp:
-
-~~~text
-gate + up
-     ↓
-dispatch C
-~~~
-
-Nếu danh tính khoa học của phép đo phụ thuộc hoàn toàn vào “dispatch số mấy”, ta đã mất khả năng so sánh hai phiên bản.
-
-Ta cần giữ:
-
-~~~text
-gate
-up
-~~~
-
-như hai công việc logic ổn định hơn, rồi quan sát cách chúng ánh xạ xuống vật lý ở từng phiên bản.
-
-Đây là giá trị của việc tách:
-
-> **cái mô hình cần làm**
-
-khỏi:
-
-> **phần cứng đang làm nó bằng cách nào**
-
+Ta cần giữ `gate`, `up`, `LM head`... như các danh tính logic tương đối ổn định rồi quan sát cách chúng ánh xạ xuống phần cứng.
 ## Fusion và “mảnh tri thức”
 
-Ở nửa đầu cuốn sách, ta đi theo trạng thái token.
+Ở nửa đầu sách ta đi theo trạng thái token. Sang tầng vật lý, ranh giới khái niệm không nhất thiết được bảo toàn nguyên vẹn.
 
-Sang đây, có một bài học mới:
+Một công việc logic có thể bị chia nhỏ, gộp với công việc khác, di chuyển dữ liệu và chạy theo nhiều hình học thực thi.
 
-> **Đường đi vật lý không bảo toàn nguyên ranh giới khái niệm mà ta vẽ trên sơ đồ.**
-
-Một trạng thái logic có thể được:
-
-- chia nhỏ;
-- gộp công việc;
-- di chuyển trong bộ nhớ;
-- xử lý theo nhiều hình học khác nhau.
-
-Vì vậy nếu ta muốn “đi theo token” ở phần cứng, ta phải cẩn thận với câu:
-
-> “Token đang ở kernel X.”
-
-Thực tế có thể là:
-
-> một phần công việc phục vụ trạng thái của token đang được thực hiện trong một kernel, cùng với công việc logic khác.
-
+Vì vậy câu “token đang ở kernel X” thường quá đơn giản. Chính xác hơn là: **một phần công việc phục vụ trạng thái hiện tại đang được thực thi ở đó**.
 ## Tiếp theo: bộ nhớ
 
 Cho tới đây ta chủ yếu nói:

@@ -40,227 +40,94 @@ Trong hệ thống tính toán, ý tưởng tương tự được gọi là **d�
 
 ## Một trace ghi lại điều gì?
 
-Tùy công cụ và mục đích, trace có thể chứa:
+Tùy công cụ và mục đích, trace có thể chứa công việc đã gửi, thời điểm bắt đầu/kết thúc, thứ tự thực thi, điểm đồng bộ và danh tính logic mà công việc phục vụ.
 
-- công việc nào được gửi;
-- thời điểm bắt đầu;
-- thời điểm kết thúc;
-- thứ tự thực thi;
-- điểm đồng bộ;
-- danh tính logic mà công việc đó phục vụ.
+> **[FIGURE F17] — Execution trace timeline**
+>
+> ~~~text
+> thời gian ─────────────────────────────→
+> dispatch A   [██████]
+> dispatch B          [███]
+> barrier                 |
+> dispatch C               [████████]
+> ~~~
 
-Ta có thể hình dung:
-
-~~~text
-thời gian ─────────────────────────────────────→
-
-dispatch A   [██████]
-dispatch B          [███]
-barrier                 |
-dispatch C               [████████]
-dispatch D                        [██]
-~~~
-
-Đây chưa phải một biểu đồ thật.
-
-Nó chỉ cho thấy trace biến một chuỗi hoạt động vô hình thành thứ ta có thể quan sát theo thời gian.
-
+F17 là sơ đồ giải thích cấu trúc timeline, không phải trace đo thật.
 ## Dấu thời gian
 
-Muốn biết một công việc kéo dài bao lâu, ta cần ghi thời điểm.
-
-Một **dấu thời gian (timestamp)** là một giá trị dùng để đánh dấu một thời điểm trong quá trình thực thi.
-
-Đơn giản nhất:
+Một **dấu thời gian (timestamp)** đánh dấu thời điểm trong quá trình thực thi. Ở dạng đơn giản:
 
 ~~~text
 bắt đầu = t1
 kết thúc = t2
-
 thời lượng = t2 - t1
 ~~~
 
-Trong GPU, việc lấy timestamp phải tuân theo cách phần cứng và giao diện lập trình cung cấp.
-
-Không nên giả định mọi timestamp có cùng độ chính xác hay cùng ý nghĩa.
-
+Trên GPU, timestamp phải được hiểu theo cơ chế mà phần cứng và API cung cấp; không nên giả định mọi timestamp có cùng độ chính xác hay ý nghĩa.
 ## Đồng bộ là gì?
 
-Một công việc đôi khi phải đợi công việc khác hoàn thành trước khi tiếp tục.
+Một công việc có thể phải đợi công việc khác trước khi tiếp tục. Các cơ chế kiểm soát thứ tự như vậy thuộc **đồng bộ (synchronization)**; trace có thể ghi những điểm như **hàng rào (barrier)**.
 
-Ta gọi các cơ chế kiểm soát thứ tự như vậy là **đồng bộ (synchronization)**.
-
-Ví dụ:
-
-~~~text
-A ghi dữ liệu
-↓
-phải chờ A hoàn thành
-↓
-B mới được đọc dữ liệu đó
-~~~
-
-Một trace có thể ghi những điểm đồng bộ như **hàng rào (barrier)**.
-
-Điều quan trọng là:
-
-> Có một barrier xuất hiện trong trace không có nghĩa toàn bộ khoảng thời gian giữa hai dispatch đều là “chi phí barrier”.
-
-Ta sẽ thấy ngay một ví dụ.
-
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> Có barrier trong trace không có nghĩa toàn bộ khoảng thời gian giữa hai dispatch là “barrier cost”. Attribution về thời gian phải có bằng chứng riêng.
 ## Một bước sinh token thật
 
-Trong một phép đo trên GPU tích hợp Intel Arc 140V, một bước sinh token có:
+> **KẾT QUẢ ĐO — Measured Result `[E-TRACE-01]`**
+>
+> Trong trace của một bước sinh token trên Intel Arc 140V:
+>
+> ~~~text
+> 469 dispatch vật lý
+> 469 dispatch có timestamp
+> 470 bản ghi barrier
+> 451 phép tính logic được đo
+>
+> phép tính logic chưa đo       = 0
+> định danh logic không biết    = 0
+> dispatch không quy chiếu được = 0
+> ~~~
 
-~~~text
-469 lần giao việc vật lý
-469 lần có timestamp
-470 bản ghi barrier
-451 phép tính logic được đo
-~~~
+Trong phạm vi trace đó, không có dispatch mục tiêu nào rơi khỏi bản đồ logic.
 
-Ngoài ra:
-
-~~~text
-phép tính logic chưa đo          = 0
-định danh logic không biết       = 0
-dispatch không quy chiếu được    = 0
-~~~
-
-Điều này rất quan trọng.
-
-Trong phạm vi trace đó, không có dispatch nào bị rơi khỏi bản đồ logic.
-
-Ta có thể vẽ:
-
-~~~text
-469 dispatch vật lý
-      ↓
-469 có thời gian
-      ↓
-quy chiếu
-      ↓
-451 phép tính logic
-      ↓
-0 công việc không rõ danh tính
-~~~
-
+> **[FIGURE F18] — Measured coverage + unattributed device time**
 ## Vì sao 469 lại quy về 451?
 
-Chương 12 đã cho ta câu trả lời.
+Chương 12 đã cho câu trả lời: một phép tính logic có thể tương ứng nhiều dispatch.
 
-Một phép tính logic có thể tương ứng nhiều dispatch.
+> **KẾT QUẢ ĐO — Measured Result `[E-DECOMP-01]`**
+>
+> LM head của trace mục tiêu ánh xạ từ **1 logical operation → 19 dispatches**.
 
-Ví dụ LM head:
-
-~~~text
-1 phép tính logic
-↓
-19 dispatch vật lý
-~~~
-
-Vì vậy số lượng physical dispatch có thể lớn hơn số phép tính logic.
-
+Vì vậy số physical dispatch có thể lớn hơn số phép tính logic mà không tạo mâu thuẫn.
 ## Trace có bao phủ hết thời gian không?
 
-Trong phép đo đó:
+> **KẾT QUẢ ĐO — Measured Result `[E-TRACE-02]`**
+>
+> ~~~text
+> device span                  = 1,240,766,914 ns
+> summed dispatch duration     = 1,239,803,214 ns
+> difference                   =       963,700 ns
+> difference / device span     ≈         0.078%
+> ~~~
 
-~~~text
-device span
-= 1.240.766.914 ns
+Phần chênh `963,700 ns` được gọi thận trọng là **thời gian thiết bị chưa quy chiếu (unattributed device time)**.
 
-tổng thời lượng các dispatch
-= 1.239.803.214 ns
-~~~
-
-Phần chênh lệch là:
-
-~~~text
-963.700 ns
-≈ 0,078% device span
-~~~
-
-Một cám dỗ rất lớn là nói:
-
-> “0,078% đó chính là chi phí barrier.”
-
-Nhưng bằng chứng không cho phép.
-
-Khoảng chênh có thể chứa:
-
-- khoảng trống giữa dispatch;
-- serialization;
-- hiệu ứng của điểm lấy timestamp;
-- những chi phí khác chưa được phân loại.
-
-Vì vậy tên đúng hơn là:
-
-> **thời gian thiết bị chưa quy chiếu (unattributed device time)**
-
-chứ không phải “barrier cost”.
-
-Đây là một ví dụ rất đẹp về kỷ luật đặt tên.
-
+> **RANH GIỚI DIỄN GIẢI — Interpretation Boundary**
+>
+> Không được gọi toàn bộ `963,700 ns` là “barrier cost”. Khoảng chênh có thể chứa gap giữa dispatch, serialization, ảnh hưởng của timestamp hoặc chi phí khác chưa được phân loại.
 ## Trace không phải lời giải thích
 
-Khi đã có trace, ta có thể trả lời:
+Trace có thể trả lời rất tốt: công việc nào chạy trước/sau, kéo dài bao lâu và dispatch thuộc operation nào.
 
-> Công việc nào chạy trước?
+Nhưng nếu operation X mất nhiều thời gian, trace vẫn chưa tự trả lời **vì sao**.
 
-> Công việc nào chạy sau?
+Nguyên nhân có thể liên quan tới memory traffic, execution geometry, data dependency, parallelism, kernel design hoặc điều kiện khác.
 
-> Mất bao lâu?
-
-> Dispatch này thuộc operation nào?
-
-Nhưng trace chưa tự trả lời:
-
-> Vì sao operation đó chậm?
-
-Ví dụ:
-
-~~~text
-operation X
-↓
-800 ms
-~~~
-
-Trace đã **định vị** một vùng đắt.
-
-Nhưng nguyên nhân có thể là:
-
-- đọc bộ nhớ;
-- hình học thực thi;
-- phụ thuộc dữ liệu;
-- độ song song;
-- kernel chưa phù hợp;
-- điều kiện khác.
-
-Dấu vết cho biết **ở đâu**.
-
-Cơ chế cần thêm bằng chứng để nói **vì sao**.
-
+> **Dấu vết định vị “ở đâu”; cơ chế cần thêm bằng chứng để nói “vì sao”.**
 ## Quy chiếu là chiếc cầu quan trọng nhất
 
-Một timeline GPU thuần túy có thể cho ta:
-
-~~~text
-dispatch 1
-dispatch 2
-dispatch 3
-...
-~~~
-
-Nhưng người nghiên cứu mô hình muốn biết:
-
-~~~text
-attention?
-FFN-down?
-LM head?
-lớp nào?
-~~~
-
-Do đó trace hữu ích nhất khi có cầu nối:
+Một timeline GPU thuần túy chỉ cho ta dispatch và timestamp. Người nghiên cứu mô hình cần biết chúng thuộc attention, FFN-down, LM head hay lớp nào.
 
 ~~~text
 DẤU VẾT VẬT LÝ
@@ -269,11 +136,10 @@ dispatch + timestamp
 QUY CHIẾU
         ↓
 DANH TÍNH LOGIC
-operation + lớp + vai trò
+operation + layer + role
 ~~~
 
-Nhờ vậy ta mới có thể cộng thời gian theo các họ phép tính có ý nghĩa đối với mô hình.
-
+Nhờ cầu nối này ta mới có thể cộng thời gian theo các họ phép tính có ý nghĩa đối với mô hình.
 ## Và khi cộng lại, thứ gì hiện ra?
 
 Khi nhóm các dispatch theo danh tính logic rồi cộng thời gian, ta có thể tìm thấy:
